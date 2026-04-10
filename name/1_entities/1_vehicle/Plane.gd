@@ -8,7 +8,7 @@ extends RigidBody3D
 @onready var ground_sensor = $GroundSensor
 
 func _ready():
-	gravity_scale = 0.5 
+	gravity_scale = 1
 
 func _physics_process(delta):
 	if Input.is_action_pressed("ui_up"):

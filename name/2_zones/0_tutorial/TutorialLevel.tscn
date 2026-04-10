@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cd3l2l3p48trd"]
+
+[ext_resource type="PackedScene" uid="uid://cagelom1o4xoh" path="res://1_entities/1_vehicle/Plane.tscn" id="1_l7rvi"]
+
+[sub_resource type="Environment" id="Environment_l7rvi"]
+
+[node name="TutorialLevel" type="Node3D" unique_id=447085650]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=981244227]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=930666318]
+environment = SubResource("Environment_l7rvi")
+
+[node name="Ground" type="CSGBox3D" parent="." unique_id=531760034]
+size = Vector3(1000, 1, 1000)
+
+[node name="Plane" parent="." unique_id=1323246592 instance=ExtResource("1_l7rvi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
