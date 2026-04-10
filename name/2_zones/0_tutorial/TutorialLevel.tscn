@@ -12,6 +12,7 @@
 environment = SubResource("Environment_l7rvi")
 
 [node name="Ground" type="CSGBox3D" parent="." unique_id=531760034]
+use_collision = true
 size = Vector3(1000, 1, 1000)
 
 [node name="Plane" parent="." unique_id=1323246592 instance=ExtResource("1_l7rvi")]
