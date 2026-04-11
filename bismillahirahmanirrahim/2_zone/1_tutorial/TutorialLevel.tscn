@@ -78,6 +78,22 @@ shader_parameter/dirt_color = Vector3(0.2, 0.15, 0.1)
 shader_parameter/detail_scale = 50.0
 shader_parameter/macro_scale = 0.01
 
+[sub_resource type="Curve" id="Curve_smoke_scale"]
+_data = [Vector2(0, 0.2), 0.0, 2.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_smoke_color"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0.1, 0.1, 0.1, 0.8, 0.3, 0.3, 0.3, 0.4, 0.5, 0.5, 0.5, 0)
+
+[sub_resource type="Curve" id="Curve_fire_scale"]
+_data = [Vector2(0, 0.5), 0.0, 2.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_fire_color"]
+offsets = PackedFloat32Array(0, 0.2, 0.6, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 0.8, 0, 1, 1, 0.2, 0, 0.8, 0.5, 0, 0, 0)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(10, 3, 10)
 
@@ -104,8 +120,9 @@ size = Vector3(4000, 1200, 4000)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_smoke"]
 transparency = 1
+vertex_color_use_as_albedo = true
 shading_mode = 0
-albedo_color = Color(0.3, 0.3, 0.3, 0.5)
+albedo_color = Color(1, 1, 1, 1)
 
 [sub_resource type="SphereMesh" id="SphereMesh_damage_smoke"]
 material = SubResource("StandardMaterial3D_smoke")
@@ -113,8 +130,11 @@ radius = 0.5
 height = 1.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fire"]
+transparency = 1
+blend_mode = 1
 shading_mode = 0
-albedo_color = Color(1, 0.5, 0, 1)
+vertex_color_use_as_albedo = true
+albedo_color = Color(1, 1, 1, 1)
 
 [sub_resource type="SphereMesh" id="SphereMesh_damage_fire"]
 material = SubResource("StandardMaterial3D_fire")
@@ -394,8 +414,8 @@ transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 
 
 [node name="SmokeParticles" type="CPUParticles3D" parent="AirplaneContainer" unique_id=55667788]
 emitting = false
-amount = 30
-lifetime = 1.0
+amount = 80
+lifetime = 2.0
 mesh = SubResource("SphereMesh_damage_smoke")
 direction = Vector3(0, 1, 1)
 spread = 20.0
@@ -404,12 +424,14 @@ initial_velocity_min = 2.0
 initial_velocity_max = 5.0
 scale_amount_min = 0.5
 scale_amount_max = 2.0
-color = Color(0.2, 0.2, 0.2, 0.6)
+scale_amount_curve = SubResource("Curve_smoke_scale")
+color_ramp = SubResource("Gradient_smoke_color")
 
 [node name="FireParticles" type="CPUParticles3D" parent="AirplaneContainer" unique_id=99887766]
 emitting = false
-amount = 20
+amount = 60
 lifetime = 0.5
+draw_order = 1
 mesh = SubResource("SphereMesh_damage_fire")
 direction = Vector3(0, 1, 1)
 spread = 30.0
@@ -418,7 +440,8 @@ initial_velocity_min = 5.0
 initial_velocity_max = 10.0
 scale_amount_min = 0.2
 scale_amount_max = 1.0
-color = Color(1, 0.4, 0, 1)
+scale_amount_curve = SubResource("Curve_fire_scale")
+color_ramp = SubResource("Gradient_fire_color")
 
 [node name="TPSPos" type="Marker3D" parent="AirplaneContainer" unique_id=244612265]
 transform = Transform3D(1, 0, 0, 0, 0.997613, 0.06906, 0, -0.06906, 0.997613, 0, 0.779, 2.267)
