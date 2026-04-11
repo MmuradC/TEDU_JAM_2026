@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://crfi70c2b7jxm"]
 
-[ext_resource type="PackedScene" uid="uid://0xyg0awvdx6o" path="res://bf109.fbx" id="1_fbx"]
-[ext_resource type="Script" uid="uid://b128sons3xxpd" path="res://Airplane.gd" id="2_gd"]
-[ext_resource type="Texture2D" uid="uid://bjhv2li4vget6" path="res://icon.svg" id="3_svg"]
-[ext_resource type="PackedScene" path="res://AA_Gun.tscn" id="AA_Gun_Scene"]
+[ext_resource type="Texture2D" uid="uid://bjhv2li4vget6" path="res://icon.svg" id="1_ahy7m"]
+[ext_resource type="Script" uid="uid://b128sons3xxpd" path="res://1_entities/1_airplane/Airplane.gd" id="2_h44x5"]
+[ext_resource type="PackedScene" uid="uid://0xyg0awvdx6o" path="res://1_entities/1_airplane/bf109.fbx" id="3_r4ypy"]
+[ext_resource type="PackedScene" path="res://1_entities/2_gun/AA_Gun.tscn" id="4_8bb2v"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_night"]
 sky_top_color = Color(0.02, 0.02, 0.05, 1)
@@ -25,7 +25,7 @@ glow_intensity = 2.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
 albedo_color = Color(0.12, 0.12, 0.12, 1)
-albedo_texture = ExtResource("3_svg")
+albedo_texture = ExtResource("1_ahy7m")
 uv1_scale = Vector3(0.1, 0.1, 0.1)
 uv1_triplanar = true
 uv1_world_triplanar = true
@@ -45,7 +45,7 @@ emission_energy_multiplier = 0.5
 material = SubResource("StandardMaterial3D_hitbox_vis")
 size = Vector3(10, 3, 10)
 
-[node name="Main" type="Node3D" unique_id=581330192]
+[node name="TutorialLevel" type="Node3D" unique_id=581330192]
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=885649192]
 
@@ -119,9 +119,9 @@ size = Vector3(1000, 1, 1000)
 material = SubResource("StandardMaterial3D_ground")
 
 [node name="AirplaneContainer" type="Node3D" parent="." unique_id=2063578091 groups=["player"]]
-script = ExtResource("2_gd")
+script = ExtResource("2_h44x5")
 
-[node name="bf109" parent="AirplaneContainer" unique_id=1538240271 instance=ExtResource("1_fbx")]
+[node name="bf109" parent="AirplaneContainer" unique_id=1620912594 instance=ExtResource("3_r4ypy")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 5, 0)
 
 [node name="Camera3D" type="Camera3D" parent="AirplaneContainer" unique_id=196245194]
@@ -138,134 +138,136 @@ shape = SubResource("BoxShape3D_hitbox")
 [node name="HitBoxMesh" type="MeshInstance3D" parent="AirplaneContainer/HitBox" unique_id=751817026]
 mesh = SubResource("BoxMesh_hitbox")
 
-[node name="AA_Gun" parent="." unique_id=1619544889 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Guns" type="Node3D" parent="." unique_id=491621902]
+
+[node name="AA_Gun" parent="AA_Guns" unique_id=1619544889 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, -150)
 
-[node name="AA_Gun2" parent="." unique_id=667046265 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun2" parent="AA_Guns" unique_id=667046265 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -100, 0, -400)
 
-[node name="AA_Gun3" parent="." unique_id=17747880 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun3" parent="AA_Guns" unique_id=17747880 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, -650)
 
-[node name="AA_Gun4" parent="." unique_id=1362600769 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun4" parent="AA_Guns" unique_id=1362600769 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -200, 0, -900)
 
-[node name="AA_Gun5" parent="." unique_id=1421288825 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun5" parent="AA_Guns" unique_id=1421288825 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 300, 0, -300)
 
-[node name="AA_Gun6" parent="." unique_id=2130888366 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun6" parent="AA_Guns" unique_id=2130888366 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -350, 0, -550)
 
-[node name="AA_Gun7" parent="." unique_id=1057233919 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun7" parent="AA_Guns" unique_id=1057233919 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 400, 0, -1200)
 
-[node name="AA_Gun8" parent="." unique_id=186271160 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun8" parent="AA_Guns" unique_id=186271160 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -400, 0, -1500)
 
-[node name="AA_Gun9" parent="." unique_id=538883696 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun9" parent="AA_Guns" unique_id=538883696 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 450, 0, -1800)
 
-[node name="AA_Gun10" parent="." unique_id=304474059 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun10" parent="AA_Guns" unique_id=304474059 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, -2100)
 
-[node name="AA_Gun11" parent="." unique_id=1886476286 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun11" parent="AA_Guns" unique_id=1886476286 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 250, 0, -2400)
 
-[node name="AA_Gun12" parent="." unique_id=819948761 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun12" parent="AA_Guns" unique_id=819948761 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -350, 0, -2700)
 
-[node name="AA_Gun13" parent="." unique_id=503133985 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun13" parent="AA_Guns" unique_id=503133985 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, -3000)
 
-[node name="AA_Gun14" parent="." unique_id=336215984 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun14" parent="AA_Guns" unique_id=336215984 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, -3300)
 
-[node name="AA_Gun15" parent="." unique_id=1846894901 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun15" parent="AA_Guns" unique_id=1846894901 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 200, 0, -3600)
 
-[node name="AA_Gun16" parent="." unique_id=1969698010 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun16" parent="AA_Guns" unique_id=1969698010 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -250, 0, -3850)
 
-[node name="AA_Gun17" parent="." unique_id=298134411 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun17" parent="AA_Guns" unique_id=298134411 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 350, 0, -4100)
 
-[node name="AA_Gun18" parent="." unique_id=924541231 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun18" parent="AA_Guns" unique_id=924541231 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, -4350)
 
-[node name="AA_Gun19" parent="." unique_id=155119981 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun19" parent="AA_Guns" unique_id=155119981 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 450, 0, -4600)
 
-[node name="AA_Gun20" parent="." unique_id=1539143188 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun20" parent="AA_Guns" unique_id=1539143188 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -400, 0, -4850)
 
-[node name="AA_Gun21" parent="." unique_id=1360797098 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun21" parent="AA_Guns" unique_id=1360797098 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, -5100)
 
-[node name="AA_Gun22" parent="." unique_id=36977264 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun22" parent="AA_Guns" unique_id=36977264 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 0, -5350)
 
-[node name="AA_Gun23" parent="." unique_id=470240185 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun23" parent="AA_Guns" unique_id=470240185 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 500, 0, -5600)
 
-[node name="AA_Gun24" parent="." unique_id=614484192 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun24" parent="AA_Guns" unique_id=614484192 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -200, 0, -5850)
 
-[node name="AA_Gun25" parent="." unique_id=747001167 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun25" parent="AA_Guns" unique_id=747001167 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 300, 0, -6100)
 
-[node name="AA_Gun26" parent="." unique_id=540740224 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun26" parent="AA_Guns" unique_id=540740224 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -450, 0, -6350)
 
-[node name="AA_Gun27" parent="." unique_id=1558979861 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun27" parent="AA_Guns" unique_id=1558979861 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, -6600)
 
-[node name="AA_Gun28" parent="." unique_id=1483098181 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun28" parent="AA_Guns" unique_id=1483098181 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -350, 0, -6850)
 
-[node name="AA_Gun29" parent="." unique_id=2111516887 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun29" parent="AA_Guns" unique_id=2111516887 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 400, 0, -7100)
 
-[node name="AA_Gun30" parent="." unique_id=1212106884 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun30" parent="AA_Guns" unique_id=1212106884 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -100, 0, -7350)
 
-[node name="AA_Gun31" parent="." unique_id=111914047 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun31" parent="AA_Guns" unique_id=111914047 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 250, 0, -7600)
 
-[node name="AA_Gun32" parent="." unique_id=1258646294 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun32" parent="AA_Guns" unique_id=1258646294 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -500, 0, -7850)
 
-[node name="AA_Gun33" parent="." unique_id=31264345 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun33" parent="AA_Guns" unique_id=31264345 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, -8100)
 
-[node name="AA_Gun34" parent="." unique_id=596301141 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun34" parent="AA_Guns" unique_id=596301141 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -250, 0, -8350)
 
-[node name="AA_Gun35" parent="." unique_id=2040726871 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun35" parent="AA_Guns" unique_id=2040726871 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 450, 0, -8600)
 
-[node name="AA_Gun36" parent="." unique_id=1237362630 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun36" parent="AA_Guns" unique_id=1237362630 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, -8850)
 
-[node name="AA_Gun37" parent="." unique_id=738860987 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun37" parent="AA_Guns" unique_id=738860987 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 350, 0, -9100)
 
-[node name="AA_Gun38" parent="." unique_id=512342884 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun38" parent="AA_Guns" unique_id=512342884 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -400, 0, -9350)
 
-[node name="AA_Gun39" parent="." unique_id=1179512696 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun39" parent="AA_Guns" unique_id=1179512696 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 200, 0, -9600)
 
-[node name="AA_Gun40" parent="." unique_id=1677692390 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun40" parent="AA_Guns" unique_id=1677692390 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 0, -9850)
 
-[node name="AA_Gun41" parent="." unique_id=1876660073 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun41" parent="AA_Guns" unique_id=1876660073 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 500, 0, -10100)
 
-[node name="AA_Gun42" parent="." unique_id=2047654813 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun42" parent="AA_Guns" unique_id=2047654813 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, -10350)
 
-[node name="AA_Gun43" parent="." unique_id=1432642999 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun43" parent="AA_Guns" unique_id=1432642999 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 400, 0, -10600)
 
-[node name="AA_Gun44" parent="." unique_id=1976408559 instance=ExtResource("AA_Gun_Scene")]
+[node name="AA_Gun44" parent="AA_Guns" unique_id=1976408559 instance=ExtResource("4_8bb2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -200, 0, -10850)

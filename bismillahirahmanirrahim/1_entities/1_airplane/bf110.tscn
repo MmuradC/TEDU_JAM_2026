@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://81a2ei2tkvn6"]
 
-[ext_resource type="PackedScene" uid="uid://0xyg0awvdx6o" path="res://bf109.fbx" id="1_60epi"]
+[ext_resource type="PackedScene" uid="uid://0xyg0awvdx6o" path="res://1_entities/1_airplane/bf109.fbx" id="1_60epi"]
 
 [node name="Node3D" type="Node3D" unique_id=1482806127]
 

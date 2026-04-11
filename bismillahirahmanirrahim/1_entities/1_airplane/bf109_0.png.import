@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dxtb6jvp0kfjb"
-path.s3tc="res://.godot/imported/bf109_0.png-beecc44dadd491cfa38ccaa5fa24a512.s3tc.ctex"
+path.s3tc="res://.godot/imported/bf109_0.png-6b43a8376b6dfade85a48de008034f43.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -14,8 +14,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://bf109_0.png"
-dest_files=["res://.godot/imported/bf109_0.png-beecc44dadd491cfa38ccaa5fa24a512.s3tc.ctex"]
+source_file="res://1_entities/1_airplane/bf109_0.png"
+dest_files=["res://.godot/imported/bf109_0.png-6b43a8376b6dfade85a48de008034f43.s3tc.ctex"]
 
 [params]
 

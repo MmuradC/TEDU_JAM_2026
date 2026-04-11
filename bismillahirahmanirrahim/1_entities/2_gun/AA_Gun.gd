@@ -14,7 +14,7 @@ var mevcut_bekleme_suresi: float = 3.0
 @onready var turret = $Turret 
 @onready var muzzle_flash = $Turret/Muzzle/MuzzleFlash
 @onready var shoot_sound = $ShootSound
-var explosion_scene = preload("res://Explosion.tscn")
+var explosion_scene = preload("res://1_entities/3_objects/1_bullet/Explosion.tscn")
 
 func _ready() -> void:
 	hedef = get_tree().get_first_node_in_group("player")
