@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dc6mawcqnshtd"
-path="res://.godot/imported/camera_overlay_png2.png-8893fc20aa588b33778c8541631ec8a3.ctex"
+uid="uid://bx1ieu7e4nru3"
+path="res://.godot/imported/camera_overlay_png.png-fef038be283aa612fc55c269ff37d7ab.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://camera_overlay_png2.png"
-dest_files=["res://.godot/imported/camera_overlay_png2.png-8893fc20aa588b33778c8541631ec8a3.ctex"]
+source_file="res://1_entities/1_airplane/camera_overlay_png.png"
+dest_files=["res://.godot/imported/camera_overlay_png.png-fef038be283aa612fc55c269ff37d7ab.ctex"]
 
 [params]
 

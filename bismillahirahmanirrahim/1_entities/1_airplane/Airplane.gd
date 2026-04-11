@@ -43,6 +43,7 @@ var is_dead: bool = false
 @onready var airplane_model = $bf109
 @onready var smoke_particles = get_node_or_null("SmokeParticles")
 @onready var fire_particles = get_node_or_null("FireParticles")
+@onready var nose_ray = get_node_or_null("NoseRayCast")
 @onready var camera = $Camera3D
 @onready var tps_pos = $TPSPos
 @onready var top_down_pos = $TopDownPos
@@ -80,10 +81,30 @@ func _process(delta: float) -> void:
 	update_ui()
 
 func handle_movement(delta: float) -> void:
-	# Keep constant cruise speed for this mission
-	current_speed_kmh = cruise_speed
+	# DYNAMIC SPEED (Energy Management)
 	var forward_vector = -global_transform.basis.z
+	var pitch_factor = forward_vector.y # Up is positive, Down is negative
+	
+	# Target speed based on pitch inclination
+	var target_speed = cruise_speed
+	if pitch_factor > 0: # Climbing: bleed speed
+		target_speed = lerp(cruise_speed, min_speed, pitch_factor)
+	else: # Diving: gain speed from gravity
+		target_speed = lerp(cruise_speed, max_speed, -pitch_factor)
+	
+	# Realistic acceleration rates
+	# Gravity helps much more than the engine can pull you up
+	var accel_rate = 150.0 if pitch_factor < 0 else 80.0
+	current_speed_kmh = move_toward(current_speed_kmh, target_speed, accel_rate * delta)
+	
+	# Apply translation
 	global_translate(forward_vector * (current_speed_kmh / 3.6) * delta)
+
+	# CRASH DETECTION
+	if nose_ray and nose_ray.is_colliding():
+		var collider = nose_ray.get_collider()
+		print("CRASHED INTO: ", collider.name)
+		die()
 
 	if ground:
 		ground.global_position.x = global_position.x
@@ -128,13 +149,10 @@ func handle_visuals(delta: float) -> void:
 		mouse_crosshair.modulate = mouse_crosshair.modulate.lerp(target_color, 10.0 * delta)
 		mouse_crosshair.scale = mouse_crosshair.scale.lerp(target_scale, 10.0 * delta)
 		
-		# SUBTLE CAMERA SHAKE on hard turn
-		if is_hard_turning and camera:
-			camera.h_offset = randf_range(-0.05, 0.05) * intensity
-			camera.v_offset = randf_range(-0.05, 0.05) * intensity
-		elif camera:
-			camera.h_offset = lerp(camera.h_offset, 0.0, 5.0 * delta)
-			camera.v_offset = lerp(camera.v_offset, 0.0, 5.0 * delta)
+	# Smoothly reset camera shake offsets
+	if camera:
+		camera.h_offset = lerp(camera.h_offset, 0.0, 5.0 * delta)
+		camera.v_offset = lerp(camera.v_offset, 0.0, 5.0 * delta)
 
 	if plane_crosshair and camera and airplane_model:
 		var forward_3d = airplane_model.global_position + (-airplane_model.global_transform.basis.z * 1000.0)
@@ -160,6 +178,12 @@ func update_ui() -> void:
 	
 	if health_bar:
 		health_bar.value = (current_health / max_health) * 100.0
+	
+	# Update engine sound pitch based on speed
+	var engine_sound = get_node_or_null("EngineSound")
+	if engine_sound:
+		var speed_perc = (current_speed_kmh - min_speed) / (max_speed - min_speed)
+		engine_sound.pitch_scale = lerp(0.7, 1.5, speed_perc)
 
 	if Input.is_action_just_pressed("ui_cancel"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -170,8 +194,13 @@ func take_damage(amount: float) -> void:
 	current_health -= amount
 	current_health = clamp(current_health, 0.0, max_health)
 	
-	# Visual Flash Feedback
+	# Visual Flash & Camera Shake
 	has_been_hit()
+	
+	if camera:
+		var shake_intensity = clamp(amount * 0.02, 0.1, 0.5)
+		camera.h_offset = randf_range(-shake_intensity, shake_intensity)
+		camera.v_offset = randf_range(-shake_intensity, shake_intensity)
 	
 	# Damage Phases
 	# Phase 2: Smoking (Health <= 60)

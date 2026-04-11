@@ -27,7 +27,8 @@ void fragment() {
 	
 	// Detail texture blending
 	vec4 tex = texture(albedo_texture, uv * detail_scale);
-	vec3 final_color = base_color * mix(vec3(0.5), vec3(1.2), tex.r);
+	float detail = (tex.r + tex.g + tex.b) / 3.0;
+	vec3 final_color = base_color * mix(0.9, 1.1, detail);
 	
 	// Macro variation to avoid tiling
 	float macro_n = noise(uv * macro_scale);
