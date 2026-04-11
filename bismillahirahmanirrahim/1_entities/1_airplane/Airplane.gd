@@ -28,11 +28,18 @@ var hedef_yunuslama: float = 0.0
 # AA Takip Sistemi
 var active_aa_count: int = 0
 
-@onready var speed_label = get_node("../UI/SpeedLabel")
-@onready var hit_indicator = get_node("../UI/HitIndicator")
-@onready var aa_label = get_node("../UI/AALabel")
-@onready var ucak_modeli = get_node("bf109")
-@onready var zemin = get_node("../Ground")
+@onready var speed_label = get_node("/root/TutorialLevel/UI/SpeedLabel")
+@onready var hit_indicator = get_node("/root/TutorialLevel/UI/HitIndicator")
+@onready var aa_label = get_node("/root/TutorialLevel/UI/AALabel")
+@onready var ucak_modeli = $bf109
+@onready var zemin = get_node("/root/TutorialLevel/Ground")
+@onready var mouse_crosshair = get_node("/root/TutorialLevel/UI/MouseCrosshair")
+@onready var plane_crosshair = get_node("/root/TutorialLevel/UI/PlaneCrosshair")
+@onready var camera = $Camera3D
+@onready var tps_pos = $TPSPos
+@onready var top_down_pos = $TopDownPos
+
+var virtual_mouse_offset: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -41,27 +48,59 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		kare_mouse_input += event.relative
-	
-	if event is InputEventKey and event.pressed:
-		if event.keycode == KEY_A:
-			mevcut_hiz_kmh = 700.0
-		if event.keycode == KEY_S:
-			mevcut_hiz_kmh = 120.0
+		virtual_mouse_offset += event.relative
 
 func _process(delta: float) -> void:
-	# 1. Hız ve Hareket
+	# 1. Hız ve Hareket (CONSTANT SPEED)
+	mevcut_hiz_kmh = cruise_hiz
 	var ileri_vektoru = -global_transform.basis.z
-	var egim = ileri_vektoru.y
-	var hedef_hiz_kmh = lerp(cruise_hiz, min_hiz, egim) if egim > 0 else lerp(cruise_hiz, max_hiz, -egim)
-	var fark = hedef_hiz_kmh - mevcut_hiz_kmh
-	var ivme_faktor = clamp((max_hiz - mevcut_hiz_kmh) / (max_hiz - min_hiz) if fark > 0 else (mevcut_hiz_kmh - min_hiz) / (max_hiz - min_hiz), 0.05, 1.0)
-	mevcut_hiz_kmh += fark * ivme_faktor * ivme_gucu * delta
-	mevcut_hiz_kmh = clamp(mevcut_hiz_kmh, min_hiz, max_hiz)
 	global_translate(ileri_vektoru * (mevcut_hiz_kmh / 3.6) * delta)
 
 	if zemin:
 		zemin.global_position.x = global_position.x
 		zemin.global_position.z = global_position.z
+
+	# Update Mouse Crosshair visual (War Thunder style leading)
+	virtual_mouse_offset = virtual_mouse_offset.lerp(Vector2.ZERO, 4.0 * delta)
+
+	# CIRCULAR CLAMPING
+	var max_radius = 300.0
+	if virtual_mouse_offset.length() > max_radius:
+		virtual_mouse_offset = virtual_mouse_offset.normalized() * max_radius
+
+	if mouse_crosshair:
+		var viewport_center = get_viewport().size / 2
+		mouse_crosshair.global_position = Vector2(viewport_center) + virtual_mouse_offset
+
+		# "HARD" TURN EFFECT
+		# Calculate intensity based on how close to the edge it is (0.0 to 1.0)
+		var intensity = virtual_mouse_offset.length() / max_radius
+		var is_hard_turning = intensity > 0.8
+
+		# Change color to red and scale up when turning hard
+		var target_color = Color(1, 1, 0) if not is_hard_turning else Color(1, 0, 0) # Yellow to Red
+		var target_scale = Vector2.ONE if not is_hard_turning else Vector2(1.5, 1.5)
+
+		mouse_crosshair.modulate = mouse_crosshair.modulate.lerp(target_color, 10.0 * delta)
+		mouse_crosshair.scale = mouse_crosshair.scale.lerp(target_scale, 10.0 * delta)
+	
+	# 2. Camera View Switching (TPS to Top-Down)
+	if camera and tps_pos and top_down_pos:
+		var target_transform = tps_pos.transform
+		if Input.is_key_pressed(KEY_C):
+			target_transform = top_down_pos.transform
+		
+		camera.transform = camera.transform.interpolate_with(target_transform, 5.0 * delta)
+
+	# 3. Update Plane Crosshair visual (follows true forward from model)
+	if plane_crosshair and camera and ucak_modeli:
+		var forward_3d = ucak_modeli.global_position + (-ucak_modeli.global_transform.basis.z * 1000.0)
+		if camera.is_position_behind(forward_3d):
+			plane_crosshair.visible = false
+		else:
+			plane_crosshair.visible = true
+			var screen_pos = camera.unproject_position(forward_3d)
+			plane_crosshair.global_position = screen_pos
 
 	# 2. Yumuşatılmış Dönüş
 	var hedef_yaw_hizi = clamp(-kare_mouse_input.x * hassasiyet_x / delta, -max_donus_hizi, max_donus_hizi)
