@@ -38,6 +38,8 @@ var active_aa_count: int = 0
 @onready var camera = $Camera3D
 @onready var tps_pos = $TPSPos
 @onready var top_down_pos = $TopDownPos
+@onready var ww2_viewfinder = get_node("/root/TutorialLevel/UI/WW2Viewfinder")
+@onready var tps_crosshair_nodes = [mouse_crosshair, plane_crosshair]
 
 var virtual_mouse_offset: Vector2 = Vector2.ZERO
 
@@ -86,11 +88,14 @@ func _process(delta: float) -> void:
 	
 	# 2. Camera View Switching (TPS to Top-Down)
 	if camera and tps_pos and top_down_pos:
-		var target_transform = tps_pos.transform
-		if Input.is_key_pressed(KEY_C):
-			target_transform = top_down_pos.transform
-		
+		var is_top_down = Input.is_key_pressed(KEY_C)
+		var target_transform = tps_pos.transform if not is_top_down else top_down_pos.transform
 		camera.transform = camera.transform.interpolate_with(target_transform, 5.0 * delta)
+		
+		# Toggle Viewfinder and TPS Crosshairs
+		if ww2_viewfinder: ww2_viewfinder.visible = is_top_down
+		for node in tps_crosshair_nodes:
+			if node: node.visible = not is_top_down
 
 	# 3. Update Plane Crosshair visual (follows true forward from model)
 	if plane_crosshair and camera and ucak_modeli:
