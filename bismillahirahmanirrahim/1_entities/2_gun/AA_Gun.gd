@@ -35,8 +35,10 @@ func _process(delta: float) -> void:
 	if not target: return
 	
 	var distance = global_position.distance_to(target.global_position)
+	var cloud_altitude = 500.0
+	var is_above_clouds = target.global_position.y > cloud_altitude
 	
-	if distance <= range_limit:
+	if distance <= range_limit and not is_above_clouds:
 		if not is_in_range:
 			is_in_range = true
 			if target.has_method("register_aa_in_range"): target.register_aa_in_range(true)

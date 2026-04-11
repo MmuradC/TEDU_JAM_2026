@@ -8,21 +8,14 @@
 [ext_resource type="Shader" uid="uid://c7qjjipoulwmo" path="res://2_zone/1_tutorial/Ground.gdshader" id="5_shader_ground"]
 [ext_resource type="Shader" uid="uid://dvmubh3nrp4ri" path="res://2_zone/1_tutorial/CinematicPostProcess.gdshader" id="6_shader_post"]
 [ext_resource type="Shader" uid="uid://crak51p5q5c2s" path="res://2_zone/1_tutorial/WW2Viewfinder.gdshader" id="7_shader_ww2"]
-[ext_resource type="Shader" path="res://2_zone/1_tutorial/BoundaryGrid.gdshader" id="8_shader_boundary"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_boundary"]
-render_priority = 0
-shader = ExtResource("8_shader_boundary")
-shader_parameter/grid_color = Color(1, 0, 0, 1)
-shader_parameter/grid_size = 40.0
-shader_parameter/line_thickness = 0.1
-shader_parameter/pulse_speed = 2.0
+[ext_resource type="Shader" uid="uid://dlt2yxmqbsf2g" path="res://2_zone/1_tutorial/BoundaryGrid.gdshader" id="8_shader_boundary"]
+[ext_resource type="Shader" uid="uid://7ja5yv8nplg" path="res://2_zone/1_tutorial/Clouds.gdshader" id="9_shader_clouds"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ww2"]
 shader = ExtResource("7_shader_ww2")
-shader_parameter/sepia_amount = 0.8
 shader_parameter/grain_amount = 0.15
 shader_parameter/vignette_softness = 0.1
+shader_parameter/lens_distortion = 0.15
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_post"]
 shader = ExtResource("6_shader_post")
@@ -42,9 +35,9 @@ sky_material = SubResource("PhysicalSkyMaterial_real")
 background_mode = 2
 sky = SubResource("Sky_real")
 ambient_light_source = 2
-ambient_light_color = Color(0.4, 0.4, 0.5, 1)
+ambient_light_color = Color(0.2, 0.2, 0.25, 1)
 tonemap_mode = 3
-tonemap_exposure = 1.1
+tonemap_exposure = 0.8
 tonemap_white = 1.2
 ssr_enabled = true
 ssr_max_steps = 128
@@ -60,23 +53,75 @@ glow_intensity = 0.5
 glow_strength = 0.8
 glow_bloom = 0.2
 fog_enabled = true
-fog_light_color = Color(0.6, 0.7, 0.8, 1)
-fog_density = 0.001
+fog_light_color = Color(0.4, 0.4, 0.45, 1)
+fog_density = 0.0005
 fog_aerial_perspective = 1.0
 volumetric_fog_enabled = true
-volumetric_fog_density = 0.002
-volumetric_fog_albedo = Color(0.6, 0.7, 0.8, 1)
-volumetric_fog_emission = Color(0.1, 0.1, 0.1, 1)
+volumetric_fog_density = 0.0005
+volumetric_fog_albedo = Color(0.4, 0.4, 0.45, 1)
+volumetric_fog_emission = Color(0.05, 0.05, 0.05, 1)
 volumetric_fog_length = 5000.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ground"]
 render_priority = 0
 shader = ExtResource("5_shader_ground")
 shader_parameter/albedo_texture = ExtResource("1_ahy7m")
-shader_parameter/grass_color = Color(0.1, 0.5, 0.1, 1)
-shader_parameter/dirt_color = Color(0.05, 0.3, 0.05, 1)
+shader_parameter/grass_color = Vector3(0.1, 0.2, 0.05)
+shader_parameter/dirt_color = Vector3(0.2, 0.15, 0.1)
 shader_parameter/detail_scale = 50.0
 shader_parameter/macro_scale = 0.01
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_boundary"]
+render_priority = 0
+shader = ExtResource("8_shader_boundary")
+shader_parameter/grid_color = Color(1, 0, 0, 1)
+shader_parameter/grid_size = 40.0
+shader_parameter/line_thickness = 0.1
+shader_parameter/pulse_speed = 2.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_boundary"]
+material = SubResource("ShaderMaterial_boundary")
+size = Vector3(4000, 1200, 4000)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_clouds"]
+noise_type = 3
+fractal_octaves = 3
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_clouds"]
+noise = SubResource("FastNoiseLite_clouds")
+seamless = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_clouds"]
+render_priority = 0
+shader = ExtResource("9_shader_clouds")
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_clouds")
+shader_parameter/cloud_density = 0.7
+shader_parameter/scrolling_speed = 0.02
+shader_parameter/cloud_color = Color(0.9, 0.9, 1, 0.95)
+shader_parameter/height_intensity = 30.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_clouds"]
+material = SubResource("ShaderMaterial_clouds")
+size = Vector2(20000, 20000)
+subdivide_depth = 100
+subdivide_width = 100
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rain"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.8, 0.8, 1, 0.15)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rain"]
+material = SubResource("StandardMaterial3D_rain")
+size = Vector3(0.02, 0.5, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_smoke"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_damage_smoke"]
+material = SubResource("StandardMaterial3D_smoke")
 
 [sub_resource type="Curve" id="Curve_smoke_scale"]
 _data = [Vector2(0, 0.2), 0.0, 2.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
@@ -86,13 +131,16 @@ point_count = 2
 offsets = PackedFloat32Array(0, 0.5, 1)
 colors = PackedColorArray(0.1, 0.1, 0.1, 0.8, 0.3, 0.3, 0.3, 0.4, 0.5, 0.5, 0.5, 0)
 
-[sub_resource type="Curve" id="Curve_fire_scale"]
-_data = [Vector2(0, 0.5), 0.0, 2.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.0, 0.0, 0, 0]
-point_count = 3
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fire"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
 
-[sub_resource type="Gradient" id="Gradient_fire_color"]
-offsets = PackedFloat32Array(0, 0.2, 0.6, 1)
-colors = PackedColorArray(1, 1, 1, 1, 1, 0.8, 0, 1, 1, 0.2, 0, 0.8, 0.5, 0, 0, 0)
+[sub_resource type="SphereMesh" id="SphereMesh_damage_fire"]
+material = SubResource("StandardMaterial3D_fire")
+radius = 0.3
+height = 0.6
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(10, 3, 10)
@@ -113,33 +161,6 @@ albedo_color = Color(0.4, 0.4, 0.4, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_base_target"]
 size = Vector3(100, 50, 100)
-
-[sub_resource type="BoxMesh" id="BoxMesh_boundary"]
-material = SubResource("ShaderMaterial_boundary")
-size = Vector3(4000, 1200, 4000)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_smoke"]
-transparency = 1
-vertex_color_use_as_albedo = true
-shading_mode = 0
-albedo_color = Color(1, 1, 1, 1)
-
-[sub_resource type="SphereMesh" id="SphereMesh_damage_smoke"]
-material = SubResource("StandardMaterial3D_smoke")
-radius = 0.5
-height = 1.0
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fire"]
-transparency = 1
-blend_mode = 1
-shading_mode = 0
-vertex_color_use_as_albedo = true
-albedo_color = Color(1, 1, 1, 1)
-
-[sub_resource type="SphereMesh" id="SphereMesh_damage_fire"]
-material = SubResource("StandardMaterial3D_fire")
-radius = 0.3
-height = 0.6
 
 [node name="TutorialLevel" type="Node3D" unique_id=371048975]
 script = ExtResource("1_level_script")
@@ -171,7 +192,6 @@ grow_horizontal = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 value = 100.0
 show_percentage = false
-
 
 [node name="HitIndicator" type="Label" parent="UI" unique_id=486933268]
 visible = false
@@ -321,6 +341,30 @@ theme_override_font_sizes/font_size = 24
 text = "Photo is taken."
 horizontal_alignment = 1
 
+[node name="ObjectiveColumn" type="Label" parent="UI" unique_id=555666777]
+offset_left = 20.0
+offset_top = 100.0
+offset_right = 400.0
+offset_bottom = 300.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "OBJECTIVE:
+- Take photos of 3 enemy bases.
+- Must be below clouds (Y < 500) to photograph.
+- Climb above clouds (Y > 500) to transmit.
+
+Progress: 0/3"
+
+[node name="ObjectiveBG" type="ColorRect" parent="UI/ObjectiveColumn" unique_id=174288458]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.4)
+
 [node name="ObjectiveLabel" type="Label" parent="UI" unique_id=811636718]
 visible = false
 anchors_preset = 8
@@ -358,7 +402,6 @@ text = "WARNING, RETURN TO YOUR OBJECTIVE IN 5 SECONDS!"
 horizontal_alignment = 1
 
 [node name="WW2Viewfinder" type="ColorRect" parent="UI" unique_id=455928646]
-
 visible = false
 material = SubResource("ShaderMaterial_ww2")
 anchors_preset = 15
@@ -405,10 +448,38 @@ material = SubResource("ShaderMaterial_ground")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 600, -1500)
 mesh = SubResource("BoxMesh_boundary")
 
-[node name="AirplaneContainer" type="Node3D" parent="." unique_id=1014828555 groups=["player"]]
+[node name="CloudLayer" type="MeshInstance3D" parent="." unique_id=333444555]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 500, -1500)
+mesh = SubResource("PlaneMesh_clouds")
 
+[node name="CloudLayer2" type="MeshInstance3D" parent="." unique_id=444555666]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 515, -1500)
+mesh = SubResource("PlaneMesh_clouds")
+
+[node name="CloudLayer3" type="MeshInstance3D" parent="." unique_id=555666777]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 485, -1500)
+mesh = SubResource("PlaneMesh_clouds")
+
+[node name="AirplaneContainer" type="Node3D" parent="." unique_id=1014828555 groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1000, 0)
 script = ExtResource("2_h44x5")
+
+[node name="RainParticles" type="CPUParticles3D" parent="AirplaneContainer" unique_id=11223344]
+amount = 2000
+lifetime = 1.0
+preprocess = 1.0
+local_coords = false
+mesh = SubResource("BoxMesh_rain")
+emission_shape = 3
+emission_box_extents = Vector3(100, 100, 100)
+direction = Vector3(0, -1, 0)
+spread = 10.0
+gravity = Vector3(0, -20, 0)
+initial_velocity_min = 40.0
+initial_velocity_max = 60.0
+scale_amount_min = 0.1
+scale_amount_max = 0.3
+color = Color(0.6, 0.7, 1, 0.3)
 
 [node name="bf109" parent="AirplaneContainer" unique_id=1427630240 instance=ExtResource("3_r4ypy")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
@@ -439,16 +510,11 @@ gravity = Vector3(0, 5, 0)
 initial_velocity_min = 5.0
 initial_velocity_max = 10.0
 scale_amount_min = 0.2
-scale_amount_max = 1.0
 color = Color(1, 0.4, 0, 1)
 
-[node name="NoseRayCast" type="RayCast3D" parent="AirplaneContainer"]
+[node name="NoseRayCast" type="RayCast3D" parent="AirplaneContainer" unique_id=586216973]
 target_position = Vector3(0, 0, -5)
-collision_mask = 1
 collide_with_areas = true
-
-scale_amount_curve = SubResource("Curve_fire_scale")
-color_ramp = SubResource("Gradient_fire_color")
 
 [node name="TPSPos" type="Marker3D" parent="AirplaneContainer" unique_id=244612265]
 transform = Transform3D(1, 0, 0, 0, 0.997613, 0.06906, 0, -0.06906, 0.997613, 0, 0.779, 2.267)
@@ -466,9 +532,6 @@ collision_mask = 4
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="AirplaneContainer/HitBox" unique_id=710945440]
 shape = SubResource("BoxShape3D_hitbox")
-
-[node name="HitBoxMesh" type="MeshInstance3D" parent="AirplaneContainer/HitBox" unique_id=65076700]
-mesh = SubResource("BoxMesh_hitbox")
 
 [node name="Bases" type="Node3D" parent="." unique_id=1370303972]
 
