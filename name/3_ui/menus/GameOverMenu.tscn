@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://dwlpb164rn5sx"]
+[gd_scene format=3 uid="uid://caqn81t1o0k5j"]
 
-[node name="Sss" type="Control" unique_id=345270882]
+[node name="GameOverMenu" type="Control" unique_id=1568423745]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

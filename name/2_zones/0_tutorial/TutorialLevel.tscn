@@ -8,9 +8,12 @@
 sky_material = SubResource("ProceduralSkyMaterial_l7rvi")
 
 [sub_resource type="Environment" id="Environment_l7rvi"]
+background_mode = 2
 background_color = Color(0.6706895, 0.6706895, 0.6706895, 1)
 sky = SubResource("Sky_0x73l")
 ambient_light_source = 3
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0
 
 [sub_resource type="Gradient" id="Gradient_l7rvi"]
 
@@ -24,7 +27,29 @@ color_ramp = SubResource("Gradient_l7rvi")
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l7rvi"]
 albedo_color = Color(0, 1, 0, 1)
 albedo_texture = SubResource("NoiseTexture2D_qiyq2")
-uv1_scale = Vector3(100, 100, 100)
+uv1_scale = Vector3(10000, 10000, 10000)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_l7rvi"]
+emission_shape = 3
+emission_box_extents = Vector3(2000, 20, 2000)
+gravity = Vector3(0, 0, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0x73l"]
+transparency = 1
+albedo_color = Color(0.601223, 0.601223, 0.60122293, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_qiyq2"]
+material = SubResource("StandardMaterial3D_0x73l")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_klf5p"]
+size = Vector3(2000, 20, 2000)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_l7rvi"]
+height = 400.0
+radius = 100.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_l7rvi"]
+size = Vector3(20000, 1000, 20000)
 
 [node name="TutorialLevel" type="Node3D" unique_id=447085650]
 
@@ -42,3 +67,36 @@ material = SubResource("StandardMaterial3D_l7rvi")
 
 [node name="Plane" parent="." unique_id=1323246592 instance=ExtResource("1_l7rvi")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
+lift_coefficient = 2.0
+
+[node name="CloudSystem" type="Node3D" parent="." unique_id=1424811575]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 100, 0)
+
+[node name="CloudParticles" type="GPUParticles3D" parent="CloudSystem" unique_id=1346853647]
+process_material = SubResource("ParticleProcessMaterial_l7rvi")
+draw_pass_1 = SubResource("QuadMesh_qiyq2")
+
+[node name="CloudArea" type="Area3D" parent="CloudSystem" unique_id=1315329889]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CloudSystem/CloudArea" unique_id=1465048936]
+shape = SubResource("BoxShape3D_klf5p")
+
+[node name="EnemyBases" type="Node3D" parent="." unique_id=1430579650]
+
+[node name="BaseArea" type="Area3D" parent="EnemyBases" unique_id=718749236]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EnemyBases/BaseArea" unique_id=1501612674]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -762.49677)
+shape = SubResource("CylinderShape3D_l7rvi")
+
+[node name="MapBoundary" type="Area3D" parent="." unique_id=130372510]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MapBoundary" unique_id=1057707013]
+shape = SubResource("BoxShape3D_l7rvi")
+
+[connection signal="body_entered" from="CloudSystem/CloudArea" to="Plane" method="_on_cloud_area_body_entered"]
+[connection signal="body_exited" from="CloudSystem/CloudArea" to="Plane" method="_on_cloud_area_body_exited"]
+[connection signal="body_entered" from="EnemyBases/BaseArea" to="Plane" method="_on_base_area_body_entered"]
+[connection signal="body_exited" from="EnemyBases/BaseArea" to="Plane" method="_on_base_area_body_exited"]
+[connection signal="body_entered" from="MapBoundary" to="Plane" method="_on_map_boundary_body_entered"]
+[connection signal="body_exited" from="MapBoundary" to="Plane" method="_on_map_boundary_body_exited"]

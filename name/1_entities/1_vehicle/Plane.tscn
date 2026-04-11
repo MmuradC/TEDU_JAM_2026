@@ -3,8 +3,6 @@
 [ext_resource type="Script" uid="uid://dbshin86f7f5o" path="res://1_entities/1_vehicle/Plane.gd" id="1_b1dk6"]
 [ext_resource type="ArrayMesh" uid="uid://bebtop4ac3scq" path="res://1_entities/1_vehicle/bf109_Cube_001.res" id="2_guojg"]
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_guojg"]
-
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_guojg"]
 radius = 2.0
 height = 20.0
@@ -13,11 +11,10 @@ height = 20.0
 size = Vector3(30, 5, 1)
 
 [node name="Plane" type="RigidBody3D" unique_id=1323246592]
-mass = 3.0
-physics_material_override = SubResource("PhysicsMaterial_guojg")
-linear_damp = 0.2
+linear_damp = 3.0
 angular_damp = 3.0
 script = ExtResource("1_b1dk6")
+engine_power = 150.0
 
 [node name="PlaneMesh" type="MeshInstance3D" parent="." unique_id=2105282196]
 transform = Transform3D(-4.3711385e-08, 0, -0.99999994, 0, 1, 0, 0.99999994, 0, -4.3711385e-08, 0, 0, 0)
@@ -34,10 +31,11 @@ shape = SubResource("BoxShape3D_guojg")
 [node name="PlaneCameraControl" type="Node3D" parent="." unique_id=1473572849]
 
 [node name="PlayerCamera" type="Camera3D" parent="PlaneCameraControl" unique_id=831170366]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 15)
+transform = Transform3D(1, 0, 0, 0, 0.9905119, 0.13742724, 0, -0.13742724, 0.9905119, 4.7683716e-07, 10.228313, 27.533382)
 fov = 60.0
 
 [node name="ThrustPoint" type="Marker3D" parent="." unique_id=1130711123]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.1802244)
 
 [node name="GroundSensor" type="RayCast3D" parent="." unique_id=1533449401]
 target_position = Vector3(0, -50, 0)
