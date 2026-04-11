@@ -102,12 +102,31 @@ size = Vector3(100, 50, 100)
 material = SubResource("ShaderMaterial_boundary")
 size = Vector3(4000, 1200, 4000)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_smoke"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.3, 0.3, 0.3, 0.5)
+
+[sub_resource type="SphereMesh" id="SphereMesh_damage_smoke"]
+material = SubResource("StandardMaterial3D_smoke")
+radius = 0.5
+height = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fire"]
+shading_mode = 0
+albedo_color = Color(1, 0.5, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_damage_fire"]
+material = SubResource("StandardMaterial3D_fire")
+radius = 0.3
+height = 0.6
+
 [node name="TutorialLevel" type="Node3D" unique_id=371048975]
 script = ExtResource("1_level_script")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1154302779]
 
-[node name="SpeedLabel" type="Label" parent="UI" unique_id=1320665633]
+[node name="SpeedLabel" type="Label" parent="UI" unique_id=212191703]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -117,8 +136,22 @@ offset_right = -20.0
 offset_bottom = 50.0
 grow_horizontal = 0
 theme_override_font_sizes/font_size = 24
-text = "Hız: 0 km/s"
+text = "Speed: 0 km/h"
 horizontal_alignment = 2
+
+[node name="HealthBar" type="ProgressBar" parent="UI" unique_id=1122334455]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -220.0
+offset_top = 60.0
+offset_right = -20.0
+offset_bottom = 85.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+value = 100.0
+show_percentage = false
+
 
 [node name="HitIndicator" type="Label" parent="UI" unique_id=486933268]
 visible = false
@@ -358,6 +391,34 @@ script = ExtResource("2_h44x5")
 
 [node name="bf109" parent="AirplaneContainer" unique_id=1427630240 instance=ExtResource("3_r4ypy")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+
+[node name="SmokeParticles" type="CPUParticles3D" parent="AirplaneContainer" unique_id=55667788]
+emitting = false
+amount = 30
+lifetime = 1.0
+mesh = SubResource("SphereMesh_damage_smoke")
+direction = Vector3(0, 1, 1)
+spread = 20.0
+gravity = Vector3(0, 2, 0)
+initial_velocity_min = 2.0
+initial_velocity_max = 5.0
+scale_amount_min = 0.5
+scale_amount_max = 2.0
+color = Color(0.2, 0.2, 0.2, 0.6)
+
+[node name="FireParticles" type="CPUParticles3D" parent="AirplaneContainer" unique_id=99887766]
+emitting = false
+amount = 20
+lifetime = 0.5
+mesh = SubResource("SphereMesh_damage_fire")
+direction = Vector3(0, 1, 1)
+spread = 30.0
+gravity = Vector3(0, 5, 0)
+initial_velocity_min = 5.0
+initial_velocity_max = 10.0
+scale_amount_min = 0.2
+scale_amount_max = 1.0
+color = Color(1, 0.4, 0, 1)
 
 [node name="TPSPos" type="Marker3D" parent="AirplaneContainer" unique_id=244612265]
 transform = Transform3D(1, 0, 0, 0, 0.997613, 0.06906, 0, -0.06906, 0.997613, 0, 0.779, 2.267)
