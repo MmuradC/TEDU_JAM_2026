@@ -21,15 +21,23 @@ func _ready() -> void:
 	current_cooldown = randf_range(min_fire_rate, max_fire_rate)
 	timer = current_cooldown
 	
-	# Procedural Beep for shooting if no sound asset exists
-	var beep = AudioStreamWAV.new()
-	beep.format = AudioStreamWAV.FORMAT_8_BITS
-	beep.mix_rate = 16000
+	# Realistic Procedural Flak Sound
+	var flak = AudioStreamWAV.new()
+	flak.format = AudioStreamWAV.FORMAT_8_BITS
+	flak.mix_rate = 11025
 	var data = PackedByteArray()
-	for i in range(2400):
-		data.append(127 if (i / 8) % 2 == 0 else -128)
-	beep.data = data
-	shoot_sound.stream = beep
+	for i in range(4000):
+		# Mix low frequency thump with white noise decay
+		var noise = (randi() % 64 - 32)
+		var thump = sin(float(i) * 0.2) * 64.0
+		var envelope = 1.0 - float(i) / 4000.0
+		var val = int((thump + noise) * envelope)
+		data.append(clamp(val, -128, 127))
+	flak.data = data
+	if shoot_sound: 
+		shoot_sound.stream = flak
+		shoot_sound.unit_size = 20.0
+		shoot_sound.max_distance = 5000.0
 
 func _process(delta: float) -> void:
 	if not target: return

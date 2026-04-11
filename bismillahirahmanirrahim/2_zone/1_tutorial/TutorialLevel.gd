@@ -8,6 +8,7 @@ extends Node3D
 @onready var plane_crosshair = $UI/PlaneCrosshair
 @onready var boundary_warning_label = $UI/BoundaryWarningLabel
 @onready var objective_column = $UI/ObjectiveColumn
+@onready var shutter_sound = $ShutterSound
 
 var bases_photographed = []
 var total_bases = 3
@@ -30,6 +31,19 @@ func _ready():
 	fade_layer.visible = true
 	objective_label.visible = false
 	photo_taken_label.visible = false
+	
+	# Procedural Camera Click Sound
+	var click = AudioStreamWAV.new()
+	click.format = AudioStreamWAV.FORMAT_8_BITS
+	click.mix_rate = 22050
+	var data = PackedByteArray()
+	for i in range(1000):
+		# Decaying high frequency noise
+		var val = (randi() % 256 - 128) * (1.0 - float(i)/1000.0)
+		data.append(val)
+	click.data = data
+	if shutter_sound: 
+		shutter_sound.stream = click
 	
 	# Fade in from black
 	var tween = create_tween()
@@ -89,7 +103,7 @@ func check_boundary(delta):
 	var half_size = boundary_size / 2.0
 	
 	var out_x = abs(pos.x - boundary_center.x) > half_size.x
-	var out_y = pos.y < 0 or pos.y > boundary_size.y # Assuming ground is 0
+	var out_y = pos.y < 0 or pos.y > boundary_size.y 
 	var out_z = abs(pos.z - boundary_center.z) > half_size.z
 	
 	if out_x or out_y or out_z:
@@ -130,11 +144,15 @@ func take_photo():
 		show_temp_label("ERROR: PREVIOUS DATA PENDING TRANSMISSION")
 		return
 
-	# Flash effect
+	# Flash effect & Sound
 	var flash = ColorRect.new()
 	flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	flash.color = Color.WHITE
 	$UI.add_child(flash)
+	
+	if shutter_sound: 
+		shutter_sound.play()
+	
 	var t = create_tween()
 	t.tween_property(flash, "color:a", 0.0, 0.1)
 	t.finished.connect(flash.queue_free)

@@ -3,6 +3,8 @@
 [ext_resource type="Texture2D" uid="uid://bjhv2li4vget6" path="res://icon.svg" id="1_ahy7m"]
 [ext_resource type="Script" uid="uid://prgnplvsxtjh" path="res://2_zone/1_tutorial/TutorialLevel.gd" id="1_level_script"]
 [ext_resource type="Script" uid="uid://b128sons3xxpd" path="res://1_entities/1_airplane/Airplane.gd" id="2_h44x5"]
+[ext_resource type="AudioStream" uid="uid://ckblt0i0a1vj6" path="res://1_entities/1_airplane/tedu_motor.ogg" id="2_motor_stream"]
+[ext_resource type="AudioStream" uid="uid://dsk6iipw47jvd" path="res://2_zone/1_tutorial/tedu_ruzgar.ogg" id="2_v0t7o"]
 [ext_resource type="PackedScene" uid="uid://0xyg0awvdx6o" path="res://1_entities/1_airplane/bf109.fbx" id="3_r4ypy"]
 [ext_resource type="PackedScene" path="res://1_entities/2_gun/AA_Gun.tscn" id="4_8bb2v"]
 [ext_resource type="Shader" uid="uid://c7qjjipoulwmo" path="res://2_zone/1_tutorial/Ground.gdshader" id="5_shader_ground"]
@@ -103,8 +105,8 @@ shader_parameter/height_intensity = 30.0
 [sub_resource type="PlaneMesh" id="PlaneMesh_clouds"]
 material = SubResource("ShaderMaterial_clouds")
 size = Vector2(20000, 20000)
-subdivide_depth = 100
 subdivide_width = 100
+subdivide_depth = 100
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rain"]
 transparency = 1
@@ -145,17 +147,6 @@ height = 0.6
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(10, 3, 10)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hitbox_vis"]
-transparency = 1
-albedo_color = Color(0, 1, 0, 0.1)
-emission_enabled = true
-emission = Color(0, 1, 0, 1)
-emission_energy_multiplier = 0.5
-
-[sub_resource type="BoxMesh" id="BoxMesh_hitbox"]
-material = SubResource("StandardMaterial3D_hitbox_vis")
-size = Vector3(10, 3, 10)
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wall"]
 albedo_color = Color(0.4, 0.4, 0.4, 1)
 
@@ -164,6 +155,14 @@ size = Vector3(100, 50, 100)
 
 [node name="TutorialLevel" type="Node3D" unique_id=371048975]
 script = ExtResource("1_level_script")
+
+[node name="WindSound" type="AudioStreamPlayer" parent="." unique_id=860918431]
+stream = ExtResource("2_v0t7o")
+volume_db = 12.0
+autoplay = true
+
+[node name="ShutterSound" type="AudioStreamPlayer" parent="." unique_id=48199410]
+volume_db = -2.0
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1154302779]
 
@@ -456,7 +455,7 @@ mesh = SubResource("PlaneMesh_clouds")
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 515, -1500)
 mesh = SubResource("PlaneMesh_clouds")
 
-[node name="CloudLayer3" type="MeshInstance3D" parent="." unique_id=555666777]
+[node name="CloudLayer3" type="MeshInstance3D" parent="." unique_id=1975610701]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 485, -1500)
 mesh = SubResource("PlaneMesh_clouds")
 
@@ -464,11 +463,15 @@ mesh = SubResource("PlaneMesh_clouds")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1000, 0)
 script = ExtResource("2_h44x5")
 
+[node name="EngineSound" type="AudioStreamPlayer3D" parent="AirplaneContainer" unique_id=1004653121]
+stream = ExtResource("2_motor_stream")
+volume_db = -4.0
+autoplay = true
+max_distance = 2000.0
+
 [node name="RainParticles" type="CPUParticles3D" parent="AirplaneContainer" unique_id=11223344]
 amount = 2000
-lifetime = 1.0
 preprocess = 1.0
-local_coords = false
 mesh = SubResource("BoxMesh_rain")
 emission_shape = 3
 emission_box_extents = Vector3(100, 100, 100)
