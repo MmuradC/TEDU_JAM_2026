@@ -11,9 +11,10 @@ config_version=5
 [application]
 
 config/name="bismillahirahmanirrahim"
-run/main_scene="res://2_zone/1_tutorial/TutorialLevel.tscn"
+run/main_scene="res://3_ui/1_menus/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/icon="res://icon.svg"
+boot_splash/image="uid://dxklt637xb3qr"
+config/icon="uid://dxklt637xb3qr"
 
 [physics]
 
