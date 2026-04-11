@@ -66,7 +66,7 @@ size = Vector3(1000000, 1, 1000000)
 material = SubResource("StandardMaterial3D_l7rvi")
 
 [node name="Plane" parent="." unique_id=1323246592 instance=ExtResource("1_l7rvi")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0032024384, 30.101341, 0.091747284)
 lift_coefficient = 2.0
 
 [node name="CloudSystem" type="Node3D" parent="." unique_id=1424811575]
