@@ -1,9 +1,0 @@
-[gd_scene format=3 uid="uid://gjco5lwdtwjf"]
-
-[ext_resource type="PackedScene" uid="uid://f75tjfmhuais" path="res://agac.tscn" id="1_ysbpd"]
-[ext_resource type="ArrayMesh" uid="uid://bw0ddmwytop4c" path="res://agac.tres" id="2_ho4hg"]
-
-[node name="agac" unique_id=1641005202 instance=ExtResource("1_ysbpd")]
-
-[node name="cam agacı" parent="." index="0" unique_id=1942824854]
-mesh = ExtResource("2_ho4hg")
