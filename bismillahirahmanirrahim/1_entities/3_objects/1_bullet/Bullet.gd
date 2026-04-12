@@ -1,6 +1,6 @@
 extends Area3D
 
-@export var speed: float = 150.0
+@export var speed: float = 50.0
 @export var lifetime: float = 4.0
 
 func _ready() -> void:

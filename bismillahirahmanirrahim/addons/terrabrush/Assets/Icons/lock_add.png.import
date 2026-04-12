@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bi5l51gtfk3lv"
-path="res://.godot/imported/lock_add.png-babd3ba74bb926dbdb37d0e92db27c19.ctex"
+path="res://.godot/imported/lock_add.png-935c7d83b7869d25481cd1e4ab204d62.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://addons/terrabrush/Assets/Icons/lock_add.png"
-dest_files=["res://.godot/imported/lock_add.png-babd3ba74bb926dbdb37d0e92db27c19.ctex"]
+dest_files=["res://.godot/imported/lock_add.png-935c7d83b7869d25481cd1e4ab204d62.ctex"]
 
 [params]
 

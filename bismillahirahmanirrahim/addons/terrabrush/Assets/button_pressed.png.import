@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cppo7meost05e"
-path="res://.godot/imported/button_pressed.png-369288eef1d5a70c8e75359db7834a49.ctex"
+path="res://.godot/imported/button_pressed.png-835806862a4e8a4640857e1a3dd2b113.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://addons/terrabrush/Assets/button_pressed.png"
-dest_files=["res://.godot/imported/button_pressed.png-369288eef1d5a70c8e75359db7834a49.ctex"]
+dest_files=["res://.godot/imported/button_pressed.png-835806862a4e8a4640857e1a3dd2b113.ctex"]
 
 [params]
 

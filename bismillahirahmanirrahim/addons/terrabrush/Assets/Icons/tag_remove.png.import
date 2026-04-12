@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dycqbe4rc2q61"
-path="res://.godot/imported/tag_remove.png-501c3fce9bcd051f70f0fe11c9fc0c4c.ctex"
+path="res://.godot/imported/tag_remove.png-3a0e1f3702794be6075c400318e55a17.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://addons/terrabrush/Assets/Icons/tag_remove.png"
-dest_files=["res://.godot/imported/tag_remove.png-501c3fce9bcd051f70f0fe11c9fc0c4c.ctex"]
+dest_files=["res://.godot/imported/tag_remove.png-3a0e1f3702794be6075c400318e55a17.ctex"]
 
 [params]
 

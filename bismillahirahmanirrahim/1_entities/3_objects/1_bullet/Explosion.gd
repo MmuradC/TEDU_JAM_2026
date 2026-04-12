@@ -12,8 +12,8 @@ var boom_player: AudioStreamPlayer3D
 func _ready():
 	boom_player = AudioStreamPlayer3D.new()
 	add_child(boom_player)
-	boom_player.unit_size = 30.0
-	boom_player.max_distance = 10000.0
+	boom_player.unit_size = 10.0
+	boom_player.max_distance = 1000.0
 	
 	# Procedural Boom Sound
 	var boom = AudioStreamWAV.new()
@@ -69,8 +69,8 @@ func explode() -> void:
 	
 	var player = get_tree().get_first_node_in_group("player")
 	if player:
-		var blast_radius = 25.0
-		var max_damage = 40.0
+		var blast_radius = 8.0    # was 25.0 — much tighter hit zone
+		var max_damage = 25.0     # was 40.0 — slightly less damage too
 		var distance = global_position.distance_to(player.global_position)
 		
 		if distance <= blast_radius: 
@@ -81,6 +81,9 @@ func explode() -> void:
 				player.take_damage(damage)
 			elif player.has_method("has_been_hit"):
 				player.has_been_hit()
+	
+	await get_tree().create_timer(1.0).timeout
+	queue_free()
 	
 	# Wait for visual effect and sound to finish then free
 	await get_tree().create_timer(1.0).timeout

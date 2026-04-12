@@ -1,9 +1,9 @@
 extends Node3D
 
 # --- Movement Settings ---
-@export var min_speed: float = 120.0
-@export var max_speed: float = 700.0
-@export var cruise_speed: float = 400.0
+@export var min_speed: float = 100.0
+@export var max_speed: float = 370.0
+@export var cruise_speed: float = 250.0
 @export var sensitivity_x: float = 0.1
 @export var sensitivity_y: float = 0.02
 @export var acceleration_power: float = 0.4
@@ -21,14 +21,14 @@ extends Node3D
 # --- Internal State ---
 var current_turn_speed: Vector2 = Vector2.ZERO
 var frame_mouse_input: Vector2 = Vector2.ZERO
-var current_speed_kmh: float = 400.0
+var current_speed_kmh: float = 250.0
 var active_aa_count: int = 0
 var virtual_mouse_offset: Vector2 = Vector2.ZERO
 var is_flashing: bool = false
 
 # --- Health System ---
-@export var max_health: float = 100.0
-var current_health: float = 100.0
+@export var max_health: float = 80.0        # was 60.0 — takes more effort to destroy
+var current_health: float = 80.0
 var is_dead: bool = false
 
 # --- Energy System ---
@@ -45,7 +45,11 @@ var is_boosting: bool = false
 @export var boost_multiplier: float = 1.6
 
 # --- Node References ---
+var ui_node: Node = null
 @onready var speed_label = find_ui_node("SpeedLabel")
+@onready var speed_gauge = find_ui_node("SpeedGauge")
+@onready var speed_arrow = find_ui_node("SpeedArrow")
+@onready var attitude_label = find_ui_node("AttitudeLabel")
 @onready var health_bar = find_ui_node("HealthBar")
 @onready var energy_bar = find_ui_node("EnergyBar")
 @onready var hit_indicator = find_ui_node("HitIndicator")
@@ -64,11 +68,14 @@ var is_boosting: bool = false
 @onready var tps_pos = $TPSPos
 @onready var top_down_pos = $TopDownPos
 @onready var ground = get_tree().root.find_child("Ground", true, false)
+@onready var terrain_node = get_tree().get_first_node_in_group("terrain")
 
 func find_ui_node(node_name: String) -> Node:
-	var ui = get_tree().root.find_child("UI", true, false)
-	if ui:
-		return ui.find_child(node_name, true, false)
+	if not ui_node:
+		ui_node = get_tree().root.find_child("UI", true, false)
+	
+	if ui_node:
+		return ui_node.find_child(node_name, true, false)
 	return null
 
 func _ready() -> void:
@@ -99,6 +106,12 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		frame_mouse_input += event.relative
 		virtual_mouse_offset += event.relative
+	
+	if event.is_action_pressed("ui_cancel"):
+		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		else:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _process(delta: float) -> void:
 	handle_movement(delta)
@@ -106,7 +119,13 @@ func _process(delta: float) -> void:
 	handle_combat(delta)
 	handle_visuals(delta)
 	handle_camera(delta)
+	handle_audio(delta)
 	update_ui()
+
+func handle_audio(_delta: float) -> void:
+	if engine_sound:
+		var speed_perc = (current_speed_kmh - min_speed) / (max_speed - min_speed)
+		engine_sound.pitch_scale = lerp(0.7, 1.5, speed_perc)
 
 func handle_movement(delta: float) -> void:
 	var forward_vector = -global_transform.basis.z
@@ -135,7 +154,6 @@ func handle_movement(delta: float) -> void:
 	global_translate(forward_vector * (current_speed_kmh / 3.6) * delta)
 
 	# CRASH DETECTION
-	var terrain_node = get_tree().get_first_node_in_group("terrain")
 	if terrain_node and terrain_node.has_method("get_height_at_pos"):
 		var check_points = [
 			global_position,
@@ -236,6 +254,12 @@ func handle_camera(delta: float) -> void:
 		var is_top_down = Input.is_key_pressed(KEY_C)
 		var target_transform = tps_pos.transform if not is_top_down else top_down_pos.transform
 		camera.transform = camera.transform.interpolate_with(target_transform, 5.0 * delta)
+		
+		# Dynamic FOV based on speed (70 at min, 90 at max)
+		var speed_perc = (current_speed_kmh - min_speed) / (max_speed - min_speed)
+		var target_fov = lerp(70.0, 95.0, clamp(speed_perc, 0.0, 1.0))
+		camera.fov = lerp(camera.fov, target_fov, 2.0 * delta)
+		
 		if ww2_viewfinder: ww2_viewfinder.visible = is_top_down
 		if mouse_crosshair: mouse_crosshair.visible = not is_top_down
 		if plane_crosshair: plane_crosshair.visible = not is_top_down
@@ -245,6 +269,21 @@ func update_ui() -> void:
 		speed_label.text = "SPEED: %d KM/H" % int(current_speed_kmh)
 		if is_boosting:
 			speed_label.text += " [BOOST]"
+	
+	if speed_arrow:
+		# Map speed to gauge. User says visual goes to 400, but plane max is 370.
+		# We assume 400 KM/H = 360 degrees.
+		var visual_max = 400.0
+		var speed_ratio = clamp(current_speed_kmh / visual_max, 0.0, 1.0)
+		var target_rotation = speed_ratio * 360.0
+		var current_rad = deg_to_rad(speed_arrow.rotation_degrees)
+		var target_rad = deg_to_rad(target_rotation)
+		speed_arrow.rotation_degrees = rad_to_deg(lerp_angle(current_rad, target_rad, 5.0 * get_process_delta_time()))
+
+	if attitude_label:
+		# Pitch in degrees (inverted for intuitive display: nose up is positive)
+		var pitch = -global_transform.basis.get_euler().x
+		attitude_label.text = "ATTITUDE: %d°" % int(rad_to_deg(pitch))
 	
 	if health_bar:
 		health_bar.value = (current_health / max_health) * 100.0
@@ -275,32 +314,32 @@ func update_ui() -> void:
 				aa_label.visible = false
 
 func get_terrain_height() -> float:
-	# Try TerraBrush first
-	var terrabrush = get_tree().root.find_child("TerraBrush", true, false)
+	# Prioritize TerraBrush (main terrain)
+	var terrabrush = get_tree().get_first_node_in_group("terrabrush")
+	if not terrabrush:
+		terrabrush = get_tree().root.find_child("TerraBrush", true, false)
+		
 	if terrabrush and terrabrush.has_method("getHeightAtPosition"):
 		return terrabrush.getHeightAtPosition(global_position.x, global_position.z, true)
 	
-	# Fallback to existing terrain script
-	var terrain_node = get_tree().get_first_node_in_group("terrain")
-	if not terrain_node:
-		terrain_node = ground
-		
+	# Fallback to group
 	if terrain_node and terrain_node.has_method("get_height_at_pos"):
 		return terrain_node.get_height_at_pos(global_position)
 	
 	return 0.0
 
-	if engine_sound:
-		var speed_perc = (current_speed_kmh - min_speed) / (max_speed - min_speed)
-		engine_sound.pitch_scale = lerp(0.7, 1.5, speed_perc)
-
-	if Input.is_action_just_pressed("ui_cancel"):
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-
 func take_damage(amount: float) -> void:
 	if is_dead: return
 	current_health -= amount
 	current_health = clamp(current_health, 0.0, max_health)
+	
+	var level = get_tree().root.find_child("TutorialLevel", true, false)
+	if level and level.has_method("show_dialog"):
+		if current_health <= 30.0:
+			level.show_dialog("Plane health critically low!")
+		else:
+			level.show_dialog("We took damage!")
+	
 	has_been_hit()
 	if camera:
 		var shake_intensity = clamp(amount * 0.02, 0.1, 0.5)
@@ -343,8 +382,12 @@ func has_been_hit() -> void:
 func register_aa_in_range(is_inside: bool) -> void:
 	if is_inside:
 		active_aa_count += 1
+		var level = get_tree().root.find_child("TutorialLevel", true, false)
+		if level and level.has_method("show_dialog"):
+			level.show_dialog("We have entered enemy anti-air guns range, be careful!")
 	else:
 		active_aa_count = max(0, active_aa_count - 1)
+	
 	if aa_label:
 		if active_aa_count > 0:
 			aa_label.text = "WARNING: %d ANTI-AIR LOCKING ON!" % active_aa_count

@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bh2uvt5i0wy06"
-path="res://.godot/imported/terrabrush_node.png-4c1defcbf42eaa6c6d28e591a26323c5.ctex"
+path="res://.godot/imported/terrabrush_node.png-82c835ea40840062d126bc0f82da37ac.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://addons/terrabrush/terrabrush_node.png"
-dest_files=["res://.godot/imported/terrabrush_node.png-4c1defcbf42eaa6c6d28e591a26323c5.ctex"]
+dest_files=["res://.godot/imported/terrabrush_node.png-82c835ea40840062d126bc0f82da37ac.ctex"]
 
 [params]
 

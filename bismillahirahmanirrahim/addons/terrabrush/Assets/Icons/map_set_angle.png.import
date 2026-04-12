@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ci8h4u8w31qd6"
-path="res://.godot/imported/map_set_angle.png-29ba19db23832f29d4d66fdb9f9696ca.ctex"
+path="res://.godot/imported/map_set_angle.png-4f3c4d203e972590afae65f451720b3a.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://addons/terrabrush/Assets/Icons/map_set_angle.png"
-dest_files=["res://.godot/imported/map_set_angle.png-29ba19db23832f29d4d66fdb9f9696ca.ctex"]
+dest_files=["res://.godot/imported/map_set_angle.png-4f3c4d203e972590afae65f451720b3a.ctex"]
 
 [params]
 

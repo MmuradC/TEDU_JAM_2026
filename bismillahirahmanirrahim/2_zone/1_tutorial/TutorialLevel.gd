@@ -10,13 +10,15 @@ extends Node3D
 @onready var objective_column = $UI/ObjectiveColumn
 @onready var shutter_sound = $ShutterSound
 
+@onready var bases = $Bases.get_children()
+
 var bases_photographed = []
 var total_bases = 3
 var objective_completed = false
 
 # Boundary & Altitude Settings
-var boundary_center = Vector3(0, 0, 0)
-var boundary_size = Vector3(6000, 4000, 6000)
+var boundary_center = Vector3(256, 0, 256)
+var boundary_size = Vector3(512, 1000, 512)
 var outside_timer = 5.0
 var is_outside = false
 var cloud_altitude = 700.0
@@ -29,12 +31,16 @@ var pending_base = null
 @onready var minimap_camera = $UI/MiniMapContainer/SubViewport/MiniMapCamera
 @onready var minimap_subviewport = $UI/MiniMapContainer/SubViewport
 @onready var base_marker_container = $UI/MiniMapContainer/MiniMapOverlay/BaseContainer
+@onready var player_point = $UI/MiniMapContainer/MiniMapOverlay/PlayerPoint
+@onready var dialog_frame = $UI/DialogFrame
+@onready var dialog_text = $UI/DialogFrame/DialogText
 
 var discovered_map: Image
 var discovered_texture: ImageTexture
 var fog_rect: ColorRect
 
 func _ready():
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	if fade_layer:
 		fade_layer.visible = true
 		fade_layer.color.a = 1.0
@@ -42,7 +48,14 @@ func _ready():
 		tween.tween_property(fade_layer, "color:a", 0.0, 2.0)
 		tween.finished.connect(func(): fade_layer.visible = false)
 	
+	if player_point:
+		player_point.color = Color(0.2, 0.5, 1.0) # Blue point
+	
 	init_minimap()
+	place_bases_on_terrain()
+	
+	# Initial dialog
+	show_dialog("Dive under clouds to explore the enemy territory!")
 
 func init_minimap():
 	# Create discovery fog of war
@@ -74,23 +87,85 @@ func init_minimap():
 		marker.set_meta("world_pos", base.global_position)
 		base_marker_container.add_child(marker)
 
+func place_bases_on_terrain():
+	var terrabrush = get_tree().get_first_node_in_group("terrabrush")
+	if not terrabrush:
+		terrabrush = find_child("TerraBrush", true, false)
+	
+	if not terrabrush or not terrabrush.has_method("getHeightAtPosition"):
+		return
+
+	# Attempt to find flat spots for each base within [0, 512]
+	for i in range(bases.size()):
+		var base = bases[i]
+		var found_flat = false
+		var attempts = 0
+		
+		while not found_flat and attempts < 100:
+			attempts += 1
+			var test_pos = Vector2(
+				randf_range(50, 462),
+				randf_range(50, 462)
+			)
+			
+			if is_area_flat(terrabrush, test_pos):
+				var h = terrabrush.getHeightAtPosition(test_pos.x, test_pos.y, true)
+				
+				if not is_finite(h):
+					continue
+				
+				base.global_position = Vector3(test_pos.x, h, test_pos.y)
+				found_flat = true
+				print("Placed ", base.name, " at ", base.global_position, " after ", attempts, " attempts.")
+
+func is_area_flat(terrabrush: Node, pos: Vector2) -> bool:
+	var h_center = terrabrush.getHeightAtPosition(pos.x, pos.y, true)
+	var samples = [
+		Vector2(pos.x + 10, pos.y),
+		Vector2(pos.x - 10, pos.y),
+		Vector2(pos.x, pos.y + 10),
+		Vector2(pos.x, pos.y - 10)
+	]
+	
+	for s in samples:
+		var h = terrabrush.getHeightAtPosition(s.x, s.y, true)
+		if abs(h - h_center) > 1.0: # Tolerance for flatness
+			return false
+	return true
+
 func _process(delta):
 	check_boundary(delta)
 	check_reveal()
 	update_objective_ui()
 	update_minimap(delta)
 
+func show_dialog(text: String, duration: float = 4.0):
+	if not dialog_frame or not dialog_text: return
+	dialog_text.text = text
+	dialog_frame.visible = true
+	
+	# Stop previous tween if any
+	if dialog_frame.has_meta("tween"):
+		var prev_tween = dialog_frame.get_meta("tween")
+		if prev_tween and prev_tween.is_valid():
+			prev_tween.kill()
+	
+	var tween = create_tween()
+	dialog_frame.set_meta("tween", tween)
+	tween.tween_interval(duration)
+	tween.finished.connect(func(): dialog_frame.visible = false)
+
 func update_minimap(delta):
 	if not airplane: return
 	
-	# Follow player rotation (map rotates around player)
+	# Follow player position but static rotation (North up)
 	minimap_camera.global_position = Vector3(airplane.global_position.x, 2000, airplane.global_position.z)
-	minimap_camera.rotation.y = airplane.global_rotation.y
+	minimap_camera.rotation.y = 0
 	
 	# Update discovery
-	var map_size = 10000.0
-	var ux = (airplane.global_position.x / map_size + 0.5) * 100.0
-	var uy = (airplane.global_position.z / map_size + 0.5) * 100.0
+	var map_size = boundary_size.x
+	var ux = (airplane.global_position.x / map_size) * 100.0
+	var uy = (airplane.global_position.z / map_size) * 100.0
 	
 	# Draw discovery circle on Image
 	var radius = 5
@@ -109,20 +184,20 @@ func update_minimap(delta):
 		var world_pos = marker.get_meta("world_pos")
 		
 		# Check discovery (is pixel white?)
-		var mx = clamp(int((world_pos.x / map_size + 0.5) * 100.0), 0, 99)
-		var mz = clamp(int((world_pos.z / map_size + 0.5) * 100.0), 0, 99)
+		var mx = clamp(int((world_pos.x / map_size) * 100.0), 0, 99)
+		var mz = clamp(int((world_pos.z / map_size) * 100.0), 0, 99)
 		if discovered_map.get_pixel(mx, mz).r > 0.5:
 			marker.visible = true
 			
-		# Position marker on rotating minimap
+		# Position marker on static minimap
 		var rel_pos = world_pos - airplane.global_position
 		var vec2_rel = Vector2(rel_pos.x, rel_pos.z)
-		vec2_rel = vec2_rel.rotated(-airplane.global_rotation.y)
+		# No rotation transformation anymore for North-up map
 		
 		var gui_pos = (vec2_rel / cam_size) * 200.0 + Vector2(100, 100)
 		marker.position = gui_pos - marker.size/2.0
 		
-		# Clip if outside minimap circular/square bounds
+		# Clip if outside minimap bounds
 		marker.visible = marker.visible and (gui_pos.x >= 0 and gui_pos.x <= 200 and gui_pos.y >= 0 and gui_pos.y <= 200)
 
 func check_reveal():
@@ -130,7 +205,7 @@ func check_reveal():
 		if photo_status == 1:
 			if pending_base and not pending_base in bases_photographed:
 				bases_photographed.append(pending_base)
-				show_temp_label("TRANSMISSION SUCCESS: ENEMY BASE CONFIRMED!")
+				show_dialog("Photo secured. Climb to a safe altitude to transmit data to the bombers.")
 			else:
 				show_temp_label("TRANSMISSION SKIPPED: ALREADY PHOTOGRAPHED.")
 		else:
@@ -141,6 +216,11 @@ func check_reveal():
 		
 		if bases_photographed.size() >= total_bases:
 			complete_objective()
+
+func complete_objective():
+	objective_completed = true
+	objective_label.visible = true
+	show_dialog("Mission completed, good job Kamerad!")
 
 func update_objective_ui():
 	if objective_column:
@@ -203,7 +283,7 @@ func _unhandled_input(event):
 
 func take_photo():
 	if not Input.is_key_pressed(KEY_C):
-		print("PHOTO DENIED: MUST BE IN TOP-DOWN VIEW (C HELD).")
+		show_temp_label("ERROR: MUST BE IN TOP-DOWN VIEW (HOLD 'C')")
 		return
 		
 	if airplane.global_position.y > cloud_altitude:
@@ -254,7 +334,3 @@ func take_photo():
 		print("PHOTO RAY MISSED EVERYTHING")
 		photo_status = 2
 		show_temp_label("PHOTO TAKEN (EMPTY). CLIMB ABOVE CLOUDS TO TRANSMIT.")
-
-func complete_objective():
-	objective_completed = true
-	objective_label.visible = true

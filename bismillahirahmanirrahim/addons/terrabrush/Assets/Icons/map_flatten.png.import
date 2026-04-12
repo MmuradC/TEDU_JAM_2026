@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://btyfuwruiyi3a"
-path="res://.godot/imported/map_flatten.png-3ac4dc39b1b88b6e97645aaffb287635.ctex"
+path="res://.godot/imported/map_flatten.png-375ab1dd5a3096a8a8e6918b8fd63d8a.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://addons/terrabrush/Assets/Icons/map_flatten.png"
-dest_files=["res://.godot/imported/map_flatten.png-3ac4dc39b1b88b6e97645aaffb287635.ctex"]
+dest_files=["res://.godot/imported/map_flatten.png-375ab1dd5a3096a8a8e6918b8fd63d8a.ctex"]
 
 [params]
 

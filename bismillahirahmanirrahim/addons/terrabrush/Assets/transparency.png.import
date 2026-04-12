@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bupq5m4oxmau4"
-path="res://.godot/imported/transparency.png-4424f799cd8719e1ef384dc6f0fa0006.ctex"
+path="res://.godot/imported/transparency.png-59bb807d0cac27562144c6aaa20846e5.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://addons/terrabrush/Assets/transparency.png"
-dest_files=["res://.godot/imported/transparency.png-4424f799cd8719e1ef384dc6f0fa0006.ctex"]
+dest_files=["res://.godot/imported/transparency.png-59bb807d0cac27562144c6aaa20846e5.ctex"]
 
 [params]
 

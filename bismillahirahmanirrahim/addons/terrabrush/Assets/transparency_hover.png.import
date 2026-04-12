@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b7jitmpbhwov6"
-path="res://.godot/imported/transparency_hover.png-e8e44465c19faa824dac3df00ac1a95a.ctex"
+path="res://.godot/imported/transparency_hover.png-60878093939c4cbfc32443737e7dabd8.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://addons/terrabrush/Assets/transparency_hover.png"
-dest_files=["res://.godot/imported/transparency_hover.png-e8e44465c19faa824dac3df00ac1a95a.ctex"]
+dest_files=["res://.godot/imported/transparency_hover.png-60878093939c4cbfc32443737e7dabd8.ctex"]
 
 [params]
 
