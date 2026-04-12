@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene load_steps=7 format=3 uid="uid://dbm26e662ndn6"]
 
 [ext_resource type="Script" uid="uid://dbm26e662ndn6" path="res://1_entities/3_objects/1_bullet/Explosion.gd" id="1_gd"]
 

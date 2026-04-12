@@ -7,6 +7,27 @@ var is_active: bool = false
 @onready var target_marker = $TargetMarker
 @onready var explosion_visual = $ExplosionVisual
 
+var boom_player: AudioStreamPlayer3D
+
+func _ready():
+	boom_player = AudioStreamPlayer3D.new()
+	add_child(boom_player)
+	boom_player.unit_size = 30.0
+	boom_player.max_distance = 10000.0
+	
+	# Procedural Boom Sound
+	var boom = AudioStreamWAV.new()
+	boom.format = AudioStreamWAV.FORMAT_8_BITS
+	boom.mix_rate = 8000
+	var data = PackedByteArray()
+	for i in range(8000):
+		# Heavy white noise with long decay
+		var noise = (randi() % 256 - 128)
+		var envelope = pow(1.0 - float(i) / 8000.0, 3.0)
+		data.append(int(noise * envelope))
+	boom.data = data
+	boom_player.stream = boom
+
 func setup(delay: float) -> void:
 	delay_time = delay
 	time_left = delay
@@ -43,6 +64,9 @@ func explode() -> void:
 	if target_marker: target_marker.visible = false
 	if explosion_visual: explosion_visual.visible = true
 	
+	if boom_player:
+		boom_player.play()
+	
 	var player = get_tree().get_first_node_in_group("player")
 	if player:
 		var blast_radius = 25.0
@@ -50,8 +74,6 @@ func explode() -> void:
 		var distance = global_position.distance_to(player.global_position)
 		
 		if distance <= blast_radius: 
-			# Exponential damage: damage increases as distance decreases
-			# Using (1 - dist/radius)^2 for a smooth curve
 			var damage_factor = pow(1.0 - (distance / blast_radius), 2.0)
 			var damage = max_damage * damage_factor
 			
@@ -60,6 +82,6 @@ func explode() -> void:
 			elif player.has_method("has_been_hit"):
 				player.has_been_hit()
 	
-	# Wait for visual effect to finish then free
-	await get_tree().create_timer(0.5).timeout
+	# Wait for visual effect and sound to finish then free
+	await get_tree().create_timer(1.0).timeout
 	queue_free()

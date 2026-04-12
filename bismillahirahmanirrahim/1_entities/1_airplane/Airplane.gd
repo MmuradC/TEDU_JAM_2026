@@ -44,6 +44,7 @@ var is_dead: bool = false
 @onready var smoke_particles = get_node_or_null("SmokeParticles")
 @onready var fire_particles = get_node_or_null("FireParticles")
 @onready var nose_ray = get_node_or_null("NoseRayCast")
+@onready var engine_sound = get_node_or_null("EngineSound")
 @onready var camera = $Camera3D
 @onready var tps_pos = $TPSPos
 @onready var top_down_pos = $TopDownPos
@@ -59,14 +60,8 @@ func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	current_speed_kmh = cruise_speed
 	
-	# Add engine sound if not present
-	if not has_node("EngineSound"):
-		var audio = AudioStreamPlayer3D.new()
-		audio.name = "EngineSound"
-		add_child(audio)
-		# We'll assume a loop would be assigned here in a real project
-		audio.unit_size = 10.0
-		audio.autoplay = true
+	if engine_sound and not engine_sound.playing:
+		engine_sound.play()
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -93,7 +88,6 @@ func handle_movement(delta: float) -> void:
 		target_speed = lerp(cruise_speed, max_speed, -pitch_factor)
 	
 	# Realistic acceleration rates
-	# Gravity helps much more than the engine can pull you up
 	var accel_rate = 150.0 if pitch_factor < 0 else 80.0
 	current_speed_kmh = move_toward(current_speed_kmh, target_speed, accel_rate * delta)
 	
@@ -180,7 +174,6 @@ func update_ui() -> void:
 		health_bar.value = (current_health / max_health) * 100.0
 	
 	# Update engine sound pitch based on speed
-	var engine_sound = get_node_or_null("EngineSound")
 	if engine_sound:
 		var speed_perc = (current_speed_kmh - min_speed) / (max_speed - min_speed)
 		engine_sound.pitch_scale = lerp(0.7, 1.5, speed_perc)
@@ -203,11 +196,9 @@ func take_damage(amount: float) -> void:
 		camera.v_offset = randf_range(-shake_intensity, shake_intensity)
 	
 	# Damage Phases
-	# Phase 2: Smoking (Health <= 60)
 	if smoke_particles:
 		smoke_particles.emitting = current_health <= 60.0 and current_health > 0
 	
-	# Phase 3: Fire (Health <= 30)
 	if fire_particles:
 		fire_particles.emitting = current_health <= 30.0 and current_health > 0
 	
@@ -218,27 +209,22 @@ func die() -> void:
 	if is_dead: return
 	is_dead = true
 	
-	# Stop all particles
 	if smoke_particles: smoke_particles.emitting = false
 	if fire_particles: fire_particles.emitting = false
 	
-	# Hide plane
 	if airplane_model:
 		airplane_model.visible = false
 	
-	# Spawn final explosion
 	var explosion_scene = load("res://1_entities/3_objects/1_bullet/Explosion.tscn")
 	if explosion_scene:
 		var exp = explosion_scene.instantiate()
 		get_parent().add_child(exp)
 		exp.global_position = global_position
-		if exp.has_method("setup"): exp.setup(0.1) # Fast explode
+		if exp.has_method("setup"): exp.setup(0.1) 
 	
-	# Disable processing
 	set_process(false)
 	set_physics_process(false)
 	
-	# Reload mission after delay
 	await get_tree().create_timer(2.0).timeout
 	get_tree().reload_current_scene()
 
