@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://crfi70c2b7jxm"]
 
-[ext_resource type="Texture2D" uid="uid://bjhv2li4vget6" path="res://icon.svg" id="1_ahy7m"]
 [ext_resource type="Script" uid="uid://prgnplvsxtjh" path="res://2_zone/1_tutorial/TutorialLevel.gd" id="1_level_script"]
 [ext_resource type="Script" uid="uid://b128sons3xxpd" path="res://1_entities/1_airplane/Airplane.gd" id="2_h44x5"]
 [ext_resource type="AudioStream" uid="uid://ckblt0i0a1vj6" path="res://1_entities/1_airplane/tedu_motor.ogg" id="2_motor_stream"]
@@ -8,10 +7,14 @@
 [ext_resource type="PackedScene" uid="uid://0xyg0awvdx6o" path="res://1_entities/1_airplane/bf109.fbx" id="3_r4ypy"]
 [ext_resource type="PackedScene" path="res://1_entities/2_gun/AA_Gun.tscn" id="4_8bb2v"]
 [ext_resource type="Shader" uid="uid://c7qjjipoulwmo" path="res://2_zone/1_tutorial/Ground.gdshader" id="5_shader_ground"]
+[ext_resource type="Texture2D" uid="uid://ckwghew433yi" path="res://3_ui/2_popup/commander_talkbox.png" id="5_x1edg"]
 [ext_resource type="Shader" uid="uid://dvmubh3nrp4ri" path="res://2_zone/1_tutorial/CinematicPostProcess.gdshader" id="6_shader_post"]
 [ext_resource type="Shader" uid="uid://crak51p5q5c2s" path="res://2_zone/1_tutorial/WW2Viewfinder.gdshader" id="7_shader_ww2"]
 [ext_resource type="Shader" uid="uid://dlt2yxmqbsf2g" path="res://2_zone/1_tutorial/BoundaryGrid.gdshader" id="8_shader_boundary"]
 [ext_resource type="Shader" uid="uid://7ja5yv8nplg" path="res://2_zone/1_tutorial/Clouds.gdshader" id="9_shader_clouds"]
+[ext_resource type="PackedScene" uid="uid://be7wa6qxtd0ko" path="res://1_entities/3_objects/fuel silo.fbx" id="13_ylu71"]
+[ext_resource type="PackedScene" uid="uid://kcpr6eegrna7" path="res://1_entities/3_objects/hq.fbx" id="14_7si51"]
+[ext_resource type="PackedScene" uid="uid://b6egaj36ftiwh" path="res://1_entities/3_objects/liman.fbx" id="15_pwgws"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ww2"]
 shader = ExtResource("7_shader_ww2")
@@ -59,7 +62,7 @@ fog_light_color = Color(0.4, 0.4, 0.45, 1)
 fog_density = 0.0005
 fog_aerial_perspective = 1.0
 volumetric_fog_enabled = true
-volumetric_fog_density = 0.0005
+volumetric_fog_density = 0.0001
 volumetric_fog_albedo = Color(0.4, 0.4, 0.45, 1)
 volumetric_fog_emission = Color(0.05, 0.05, 0.05, 1)
 volumetric_fog_length = 5000.0
@@ -67,11 +70,15 @@ volumetric_fog_length = 5000.0
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ground"]
 render_priority = 0
 shader = ExtResource("5_shader_ground")
-shader_parameter/albedo_texture = ExtResource("1_ahy7m")
-shader_parameter/grass_color = Vector3(0.1, 0.2, 0.05)
-shader_parameter/dirt_color = Vector3(0.2, 0.15, 0.1)
+shader_parameter/grass_color = Color(0.12, 0.22, 0.06, 1)
+shader_parameter/dirt_color = Color(0.28, 0.2, 0.12, 1)
+shader_parameter/rock_color = Color(0.35, 0.32, 0.28, 1)
+shader_parameter/snow_color = Color(0.92, 0.93, 0.95, 1)
 shader_parameter/detail_scale = 50.0
 shader_parameter/macro_scale = 0.01
+shader_parameter/slope_threshold = 0.6
+shader_parameter/snow_height = 0.85
+shader_parameter/blend_sharpness = 4.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_boundary"]
 render_priority = 0
@@ -170,24 +177,25 @@ volume_db = -2.0
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -200.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = 50.0
+offset_left = -208.0
+offset_top = 596.0
+offset_right = -28.0
+offset_bottom = 630.0
 grow_horizontal = 0
 theme_override_font_sizes/font_size = 24
-text = "Speed: 0 km/h"
+text = " 0 km/h"
 horizontal_alignment = 2
 
 [node name="HealthBar" type="ProgressBar" parent="UI" unique_id=1122334455]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -220.0
-offset_top = 60.0
-offset_right = -20.0
-offset_bottom = 85.0
+offset_left = -542.00006
+offset_top = 16.0
+offset_right = -342.00006
+offset_bottom = 41.0
 grow_horizontal = 0
+scale = Vector2(2.6248987, 1.8420086)
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 value = 100.0
 show_percentage = false
@@ -340,15 +348,34 @@ theme_override_font_sizes/font_size = 24
 text = "Photo is taken."
 horizontal_alignment = 1
 
+[node name="CommanderTalkbox" type="Sprite2D" parent="UI" unique_id=885572491]
+position = Vector2(187, 58.00006)
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("5_x1edg")
+
+[node name="TalkBoxLabel" type="Label" parent="UI/CommanderTalkbox" unique_id=1692477070]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -5207.0
+offset_top = 40.000008
+offset_right = -1205.0002
+offset_bottom = 313.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 200
+text = "Finish your objective!"
+horizontal_alignment = 1
+
 [node name="ObjectiveColumn" type="Label" parent="UI" unique_id=555666777]
-offset_left = 20.0
-offset_top = 100.0
-offset_right = 400.0
-offset_bottom = 300.0
+offset_left = 19.0
+offset_top = 151.0
+offset_right = 430.0
+offset_bottom = 351.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 18
-text = "OBJECTIVE:
-- Take photos of 3 enemy bases.
+theme_override_font_sizes/font_size = 12
+text = "                               OBJECTIVE:
+- Drive the plane with your mouse.
+- Press \"C\" take photos of 3 enemy bases.
 - Must be below clouds (Y < 500) to photograph.
 - Climb above clouds (Y > 500) to transmit.
 
@@ -362,25 +389,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.4)
-
-[node name="ObjectiveLabel" type="Label" parent="UI" unique_id=811636718]
-visible = false
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = -25.0
-offset_right = 300.0
-offset_bottom = 25.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(1, 1, 0, 1)
-theme_override_font_sizes/font_size = 32
-text = "Objective completed, press Enter for your next objective!"
-horizontal_alignment = 1
+color = Color(0, 0, 0, 0)
 
 [node name="BoundaryWarningLabel" type="Label" parent="UI" unique_id=999111888]
 visible = false
@@ -420,6 +429,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="FadeLayer" type="ColorRect" parent="UI" unique_id=791917443]
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -444,7 +454,7 @@ size = Vector3(10000, 1, 10000)
 material = SubResource("ShaderMaterial_ground")
 
 [node name="BoundaryMesh" type="MeshInstance3D" parent="." unique_id=111222333]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 600, -1500)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 489.94098, -1500)
 mesh = SubResource("BoxMesh_boundary")
 
 [node name="CloudLayer" type="MeshInstance3D" parent="." unique_id=333444555]
@@ -656,3 +666,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 0, 25)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bases/Base3/PhotoTarget" unique_id=452134755]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, 0)
 shape = SubResource("BoxShape3D_base_target")
+
+[node name="fuel silo" parent="." unique_id=1431327225 instance=ExtResource("13_ylu71")]
+transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 6, -1530.6925, 1.7711945, -1446.2054)
+
+[node name="hq" parent="." unique_id=106790414 instance=ExtResource("14_7si51")]
+transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 6, -116.63073, 0.16674805, -766.37354)
+
+[node name="liman" parent="." unique_id=1527149198 instance=ExtResource("15_pwgws")]
+transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 6, 1224.5876, 14.342901, -2329.3877)

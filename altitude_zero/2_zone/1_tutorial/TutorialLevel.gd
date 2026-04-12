@@ -1,7 +1,6 @@
 extends Node3D
 
 @onready var fade_layer = $UI/FadeLayer
-@onready var objective_label = $UI/ObjectiveLabel
 @onready var photo_taken_label = $UI/PhotoTakenLabel
 @onready var airplane = $AirplaneContainer
 @onready var camera = $AirplaneContainer/Camera3D
@@ -29,7 +28,6 @@ func _ready():
 	# Initial UI state
 	fade_layer.color = Color.BLACK
 	fade_layer.visible = true
-	objective_label.visible = false
 	photo_taken_label.visible = false
 	
 	# Procedural Camera Click Sound
@@ -83,7 +81,8 @@ func update_objective_ui():
 			status_msg = "\n[STATUS: SEARCHING TARGETS...]"
 			
 		objective_column.text = "OBJECTIVE:
-- Take photos of 3 enemy bases.
+- Drive the plane with your mouse.
+- Press (C) take photos of 3 enemy bases.
 - Must be below clouds (Y < 500) to photograph.
 - Climb above clouds (Y > 500) to transmit.
 
@@ -177,6 +176,16 @@ func take_photo():
 		photo_status = 2
 		show_temp_label("PHOTO TAKEN (EMPTY). CLIMB ABOVE CLOUDS TO TRANSMIT.")
 
+
 func complete_objective():
 	objective_completed = true
-	objective_label.visible = true
+	show_temp_label("Mission completed, good job Kamerad!")
+	
+	await get_tree().create_timer(3.0).timeout
+	
+	fade_layer.visible = true
+	var tween = create_tween()
+	tween.tween_property(fade_layer, "color:a", 1.0, 2.0)
+	tween.finished.connect(func():
+		get_tree().change_scene_to_file("res://3_ui/4_cutscene/Cutscene.tscn")
+	)

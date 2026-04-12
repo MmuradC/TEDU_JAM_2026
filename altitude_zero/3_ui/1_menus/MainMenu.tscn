@@ -1,7 +1,9 @@
 [gd_scene format=3 uid="uid://dj8yk8q2v8q2v"]
 
 [ext_resource type="Script" uid="uid://cm0cc610ku6h" path="res://3_ui/1_menus/MainMenu.gd" id="1_33kg5"]
+[ext_resource type="VideoStream" uid="uid://mf2ygtbs13jy" path="res://3_ui/1_menus/renderback.ogv" id="2_1b6i6"]
 [ext_resource type="AudioStream" uid="uid://bek73gsf2ude7" path="res://3_ui/1_menus/tedujammenü.ogg" id="2_ua3l5"]
+[ext_resource type="Texture2D" uid="uid://cw8ri2246fjjl" path="res://logo_square_fix.png" id="3_1b6i6"]
 
 [node name="MainMenu" type="Control" unique_id=443450226]
 layout_mode = 3
@@ -12,36 +14,31 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_33kg5")
 
-[node name="Background" type="ColorRect" parent="." unique_id=1144315657]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.05, 0.05, 0.1, 1)
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="." unique_id=1941682288]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+scale = Vector2(0.6, 0.6)
+stream = ExtResource("2_1b6i6")
+autoplay = true
+loop = true
 
-[node name="Title" type="Label" parent="." unique_id=1737806683]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -200.0
-offset_top = 100.0
-offset_right = 200.0
-offset_bottom = 160.0
-grow_horizontal = 2
-theme_override_font_sizes/font_size = 48
-text = "BISMILLAHIRRAHMANIRRAHIM"
-horizontal_alignment = 1
+[node name="LogoSquareFix" type="Sprite2D" parent="." unique_id=980756867]
+position = Vector2(250, 135)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_1b6i6")
 
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=1101201365]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 106.0
+offset_top = -5.0
+offset_right = 306.0
+offset_bottom = 185.0
 grow_vertical = 2
+scale = Vector2(1.2589604, 1.3176342)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1472744451]
 layout_mode = 2
