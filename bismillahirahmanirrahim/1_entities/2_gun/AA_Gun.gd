@@ -39,6 +39,40 @@ func _ready() -> void:
 		shoot_sound.unit_size = 20.0
 		shoot_sound.max_distance = 5000.0
 
+@export var max_health: float = 60.0
+var current_health: float = 60.0
+var is_destroyed: bool = false
+
+func take_damage(amount: float) -> void:
+	if is_destroyed: return
+	
+	current_health -= amount
+	# Visual feedback for hitting the gun
+	if muzzle_flash:
+		muzzle_flash.visible = true
+		get_tree().create_timer(0.05).timeout.connect(func(): if muzzle_flash: muzzle_flash.visible = false)
+	
+	if current_health <= 0:
+		destroy()
+
+func destroy() -> void:
+	is_destroyed = true
+	if is_in_range and target:
+		target.register_aa_in_range(false)
+	
+	# Spawn a big explosion
+	var exp = explosion_scene.instantiate()
+	get_parent().add_child(exp)
+	exp.global_position = global_position
+	if exp.has_method("setup"): exp.setup(0.0)
+	
+	# Disable processing
+	set_process(false)
+	
+	# Hide or free
+	# For simplicity, we just queue_free after a delay
+	get_tree().create_timer(0.1).timeout.connect(queue_free)
+
 func _process(delta: float) -> void:
 	if not target: return
 	

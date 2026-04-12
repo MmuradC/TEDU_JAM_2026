@@ -1,40 +1,30 @@
 shader_type spatial;
 
+uniform float map_size = 10000.0;
 uniform sampler2D albedo_texture : source_color, filter_linear_mipmap;
-uniform vec3 grass_color = vec3(0.1, 0.2, 0.05);
-uniform vec3 dirt_color = vec3(0.2, 0.15, 0.1);
-uniform float detail_scale = 50.0;
-uniform float macro_scale = 0.01;
 
-float hash(vec2 p) {
-	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
-}
+varying vec3 v_world_pos;
 
-float noise(vec2 p) {
-	vec2 i = floor(p);
-	vec2 f = fract(p);
-	vec2 u = f * f * (3.0 - 2.0 * f);
-	return mix(mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
-			   mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+void vertex() {
+	v_world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	NORMAL = (VIEW_MATRIX * (MODEL_MATRIX * vec4(0.0, 1.0, 0.0, 0.0))).xyz;
 }
 
 void fragment() {
-	vec2 uv = UV;
+	// Simple Grass Green
+	vec3 grass = vec3(0.2, 0.3, 0.15);
+	vec3 color = grass;
 	
-	// Base terrain mix based on large-scale noise
-	float n = noise(uv * 5.0) * 0.5 + noise(uv * 20.0) * 0.25 + noise(uv * 100.0) * 0.125;
-	vec3 base_color = mix(grass_color, dirt_color, n);
+	// 1. Grid System (Every 500 meters)
+	vec2 grid_uv = v_world_pos.xz / 500.0;
+	vec2 grid = abs(fract(grid_uv - 0.5) - 0.5) / fwidth(grid_uv);
+	float line = min(grid.x, grid.y);
+	float grid_pattern = 1.0 - smoothstep(0.0, 0.05, line);
+	color = mix(color, vec3(0.5, 0.5, 0.5), grid_pattern * 0.3);
 	
-	// Detail texture blending
-	vec4 tex = texture(albedo_texture, uv * detail_scale);
-	float detail = (tex.r + tex.g + tex.b) / 3.0;
-	vec3 final_color = base_color * mix(0.9, 1.1, detail);
+	// 2. Detail Texture
+	vec4 tex = texture(albedo_texture, v_world_pos.xz * 0.05);
 	
-	// Macro variation to avoid tiling
-	float macro_n = noise(uv * macro_scale);
-	final_color *= mix(0.8, 1.2, macro_n);
-	
-	ALBEDO = final_color;
-	NORMAL = vec3(0.0, 1.0, 0.0);
-	ROUGHNESS = 0.9;
+	ALBEDO = color * mix(0.9, 1.1, tex.r);
+	ROUGHNESS = 0.8;
 }

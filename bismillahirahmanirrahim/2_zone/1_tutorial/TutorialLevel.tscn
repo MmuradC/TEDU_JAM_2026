@@ -12,6 +12,10 @@
 [ext_resource type="Shader" uid="uid://crak51p5q5c2s" path="res://2_zone/1_tutorial/WW2Viewfinder.gdshader" id="7_shader_ww2"]
 [ext_resource type="Shader" uid="uid://dlt2yxmqbsf2g" path="res://2_zone/1_tutorial/BoundaryGrid.gdshader" id="8_shader_boundary"]
 [ext_resource type="Shader" uid="uid://7ja5yv8nplg" path="res://2_zone/1_tutorial/Clouds.gdshader" id="9_shader_clouds"]
+[ext_resource type="Texture2D" uid="uid://ckxohrjfgb41m" path="res://2_zone/1_tutorial/heightmap.exr" id="10_heightmap"]
+[ext_resource type="Script" uid="uid://br8yue2ncg0qm" path="res://2_zone/1_tutorial/Terrain.gd" id="11_terrain_script"]
+[ext_resource type="Script" uid="uid://biaxby884v52h" path="res://2_zone/1_tutorial/StormManager.gd" id="12_storm_script"]
+[ext_resource type="PackedScene" uid="uid://cdetu0si1jkkk" path="res://2_zone/1_tutorial/map.tscn" id="13_map"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ww2"]
 shader = ExtResource("7_shader_ww2")
@@ -64,14 +68,18 @@ volumetric_fog_albedo = Color(0.4, 0.4, 0.45, 1)
 volumetric_fog_emission = Color(0.05, 0.05, 0.05, 1)
 volumetric_fog_length = 5000.0
 
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_ground"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
+size = Vector2(10000, 10000)
+subdivide_width = 512
+subdivide_depth = 512
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ground"]
 render_priority = 0
 shader = ExtResource("5_shader_ground")
+shader_parameter/map_size = 10000.0
 shader_parameter/albedo_texture = ExtResource("1_ahy7m")
-shader_parameter/grass_color = Vector3(0.1, 0.2, 0.05)
-shader_parameter/dirt_color = Vector3(0.2, 0.15, 0.1)
-shader_parameter/detail_scale = 50.0
-shader_parameter/macro_scale = 0.01
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_boundary"]
 render_priority = 0
@@ -83,7 +91,7 @@ shader_parameter/pulse_speed = 2.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_boundary"]
 material = SubResource("ShaderMaterial_boundary")
-size = Vector3(4000, 1200, 4000)
+size = Vector3(6000, 4000, 6000)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_clouds"]
 noise_type = 3
@@ -175,8 +183,11 @@ offset_top = 20.0
 offset_right = -20.0
 offset_bottom = 50.0
 grow_horizontal = 0
-theme_override_font_sizes/font_size = 24
-text = "Speed: 0 km/h"
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 28
+text = "SPEED: 0 KM/H"
 horizontal_alignment = 2
 
 [node name="HealthBar" type="ProgressBar" parent="UI" unique_id=1122334455]
@@ -186,7 +197,20 @@ anchor_right = 1.0
 offset_left = -220.0
 offset_top = 60.0
 offset_right = -20.0
-offset_bottom = 85.0
+offset_bottom = 80.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+value = 100.0
+show_percentage = false
+
+[node name="EnergyBar" type="ProgressBar" parent="UI" unique_id=1122334456]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -220.0
+offset_top = 85.0
+offset_right = -20.0
+offset_bottom = 95.0
 grow_horizontal = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 value = 100.0
@@ -335,9 +359,11 @@ offset_top = 100.0
 offset_right = 100.0
 offset_bottom = 130.0
 grow_horizontal = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
-text = "Photo is taken."
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 28
+text = "PHOTO IS TAKEN."
 horizontal_alignment = 1
 
 [node name="ObjectiveColumn" type="Label" parent="UI" unique_id=555666777]
@@ -345,14 +371,16 @@ offset_left = 20.0
 offset_top = 100.0
 offset_right = 400.0
 offset_bottom = 300.0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 18
 text = "OBJECTIVE:
-- Take photos of 3 enemy bases.
-- Must be below clouds (Y < 500) to photograph.
-- Climb above clouds (Y > 500) to transmit.
+- TAKE PHOTOS OF 3 ENEMY BASES.
+- MUST BE BELOW CLOUDS (Y < 700) TO PHOTOGRAPH.
+- CLIMB ABOVE CLOUDS (Y > 700) TO TRANSMIT.
 
-Progress: 0/3"
+PROGRESS: 0/3"
 
 [node name="ObjectiveBG" type="ColorRect" parent="UI/ObjectiveColumn" unique_id=174288458]
 show_behind_parent = true
@@ -377,9 +405,11 @@ offset_right = 300.0
 offset_bottom = 25.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(1, 1, 0, 1)
-theme_override_font_sizes/font_size = 32
-text = "Objective completed, press Enter for your next objective!"
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 36
+text = "OBJECTIVE COMPLETED, PRESS ENTER FOR NEXT MISSION!"
 horizontal_alignment = 1
 
 [node name="BoundaryWarningLabel" type="Label" parent="UI" unique_id=999111888]
@@ -396,7 +426,10 @@ offset_bottom = -100.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(1, 0, 0, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 36
 text = "WARNING, RETURN TO YOUR OBJECTIVE IN 5 SECONDS!"
 horizontal_alignment = 1
 
@@ -428,6 +461,71 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 1)
 
+[node name="LightningFlash" type="ColorRect" parent="UI" unique_id=20202020]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+
+[node name="MiniMapContainer" type="SubViewportContainer" parent="UI" unique_id=55555555]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -220.0
+offset_top = 130.0
+offset_right = -20.0
+offset_bottom = 330.0
+grow_horizontal = 0
+
+[node name="SubViewport" type="SubViewport" parent="UI/MiniMapContainer" unique_id=55555556]
+handle_input_locally = false
+size = Vector2i(200, 200)
+render_target_update_mode = 4
+
+[node name="MiniMapCamera" type="Camera3D" parent="UI/MiniMapContainer/SubViewport" unique_id=55555557]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 2000, 0)
+cull_mask = 524289
+projection = 1
+size = 2000.0
+far = 5000.0
+
+[node name="MiniMapOverlay" type="Control" parent="UI/MiniMapContainer" unique_id=55555558]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="PlayerPoint" type="ColorRect" parent="UI/MiniMapContainer/MiniMapOverlay" unique_id=55555559]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -4.0
+offset_top = -4.0
+offset_right = 4.0
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 1, 0, 1)
+
+[node name="BaseContainer" type="Control" parent="UI/MiniMapContainer/MiniMapOverlay" unique_id=55555560]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="StormManager" type="Node" parent="." unique_id=30303030]
+script = ExtResource("12_storm_script")
+sun_node = NodePath("DirectionalLight3D")
+flash_rect = NodePath("UI/LightningFlash")
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=687804269]
 environment = SubResource("Environment_real")
 
@@ -437,26 +535,34 @@ light_color = Color(1, 0.95, 0.9, 1)
 light_energy = 1.5
 shadow_enabled = true
 
-[node name="Ground" type="CSGBox3D" parent="." unique_id=1979182744]
+[node name="Ground" type="MeshInstance3D" parent="." unique_id=1979182744]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
-use_collision = true
-size = Vector3(10000, 1, 10000)
-material = SubResource("ShaderMaterial_ground")
+mesh = SubResource("PlaneMesh_ground")
+surface_material_override/0 = SubResource("ShaderMaterial_ground")
+script = ExtResource("11_terrain_script")
+height_scale = 0.0
+
+[node name="Map" parent="Ground" unique_id=13131313 instance=ExtResource("13_map")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Ground" unique_id=200000000]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/StaticBody3D" unique_id=200000001]
+shape = SubResource("WorldBoundaryShape3D_ground")
 
 [node name="BoundaryMesh" type="MeshInstance3D" parent="." unique_id=111222333]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 600, -1500)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2000, 0)
 mesh = SubResource("BoxMesh_boundary")
 
 [node name="CloudLayer" type="MeshInstance3D" parent="." unique_id=333444555]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 500, -1500)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 700, 0)
 mesh = SubResource("PlaneMesh_clouds")
 
 [node name="CloudLayer2" type="MeshInstance3D" parent="." unique_id=444555666]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 515, -1500)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 715, 0)
 mesh = SubResource("PlaneMesh_clouds")
 
 [node name="CloudLayer3" type="MeshInstance3D" parent="." unique_id=1975610701]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 485, -1500)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 685, 0)
 mesh = SubResource("PlaneMesh_clouds")
 
 [node name="AirplaneContainer" type="Node3D" parent="." unique_id=1014828555 groups=["player"]]
@@ -527,6 +633,7 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -20
 
 [node name="Camera3D" type="Camera3D" parent="AirplaneContainer" unique_id=1168344929]
 transform = Transform3D(1, 0, 0, 0, 0.997613, 0.06906, 0, -0.06906, 0.997613, 0, 0.779, 2.267)
+current = true
 far = 10000.0
 
 [node name="HitBox" type="Area3D" parent="AirplaneContainer" unique_id=501108441]
@@ -539,7 +646,7 @@ shape = SubResource("BoxShape3D_hitbox")
 [node name="Bases" type="Node3D" parent="." unique_id=1370303972]
 
 [node name="Base1" type="Node3D" parent="Bases" unique_id=1452407740]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, -800)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1500, 0, 1500)
 
 [node name="Walls" type="CSGCombiner3D" parent="Bases/Base1" unique_id=552245354]
 material_override = SubResource("StandardMaterial3D_wall")
@@ -576,7 +683,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, 0)
 shape = SubResource("BoxShape3D_base_target")
 
 [node name="Base2" type="Node3D" parent="Bases" unique_id=765568820]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -800, 0, -1500)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2000, 0, -500)
 
 [node name="Walls" type="CSGCombiner3D" parent="Bases/Base2" unique_id=532753564]
 material_override = SubResource("StandardMaterial3D_wall")
