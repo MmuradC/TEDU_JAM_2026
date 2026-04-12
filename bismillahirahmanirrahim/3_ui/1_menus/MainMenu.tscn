@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dj8yk8q2v8q2v"]
 
 [ext_resource type="Script" uid="uid://cm0cc610ku6h" path="res://3_ui/1_menus/MainMenu.gd" id="1_33kg5"]
+[ext_resource type="VideoStream" uid="uid://renderback_ogv" path="res://3_ui/1_menus/renderback.ogv" id="2_video"]
 [ext_resource type="AudioStream" uid="uid://bek73gsf2ude7" path="res://3_ui/1_menus/tedujammenü.ogg" id="2_ua3l5"]
 
 [node name="MainMenu" type="Control" unique_id=443450226]
@@ -12,14 +13,18 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_33kg5")
 
-[node name="Background" type="ColorRect" parent="." unique_id=1144315657]
+[node name="BackgroundVideo" type="VideoStreamPlayer" parent="." unique_id=1144315657]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.05, 0.05, 0.1, 1)
+stream = ExtResource("2_video")
+autoplay = true
+expand = true
+loop = true
+buffering_msec = 500
 
 [node name="Title" type="Label" parent="." unique_id=1737806683]
 layout_mode = 1

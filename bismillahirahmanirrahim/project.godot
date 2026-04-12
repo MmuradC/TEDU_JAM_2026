@@ -10,11 +10,11 @@ config_version=5
 
 [application]
 
-config/name="bismillahirahmanirrahim"
+config/name="Altitude Zero"
 run/main_scene="res://3_ui/1_menus/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
-boot_splash/image="uid://dxklt637xb3qr"
-config/icon="uid://dxklt637xb3qr"
+boot_splash/image="uid://c7yxctsohjtil"
+config/icon="uid://c7yxctsohjtil"
 
 [physics]
 

@@ -1,10 +1,11 @@
 extends StaticBody3D
 
-@export var min_fire_rate: float = 2.0 
-@export var max_fire_rate: float = 4.0 
-@export var rotation_speed: float = 5.0 
-@export var range_limit: float = 1200.0 # Increased range for 1km altitude
-@export var deviation_limit: float = 40.0 
+@export var min_fire_rate: float = 6.0      # was 2.0 — less oppressive spam
+@export var max_fire_rate: float = 10.0      # was 4.0 — more breathing room
+@export var rotation_speed: float = 2.5     # was 5.0 — slower turret tracking
+@export var range_limit: float = 400.0      # was 1200 — meaningful but fair threat zone
+@export var deviation_limit: float = 25.0   # was 40.0 — more dangerous at close range
+@export var bullet_size: float = 0.3
 
 var target: Node3D = null
 var is_in_range: bool = false
@@ -39,11 +40,48 @@ func _ready() -> void:
 		shoot_sound.unit_size = 20.0
 		shoot_sound.max_distance = 5000.0
 
+@export var max_health: float = 60.0
+var current_health: float = 60.0
+var is_destroyed: bool = false
+
+func take_damage(amount: float) -> void:
+	if is_destroyed: return
+	
+	current_health -= amount
+	# Visual feedback for hitting the gun
+	if muzzle_flash:
+		muzzle_flash.visible = true
+		get_tree().create_timer(0.05).timeout.connect(func(): 
+			if is_instance_valid(muzzle_flash):
+				muzzle_flash.visible = false
+		)
+	
+	if current_health <= 0:
+		destroy()
+
+func destroy() -> void:
+	is_destroyed = true
+	if is_in_range and target:
+		target.register_aa_in_range(false)
+	
+	# Spawn a big explosion
+	var exp = explosion_scene.instantiate()
+	get_parent().add_child(exp)
+	exp.global_position = global_position
+	if exp.has_method("setup"): exp.setup(0.0)
+	
+	# Disable processing
+	set_process(false)
+	
+	# Hide or free
+	# For simplicity, we just queue_free after a delay
+	get_tree().create_timer(0.1).timeout.connect(queue_free)
+
 func _process(delta: float) -> void:
 	if not target: return
 	
 	var distance = global_position.distance_to(target.global_position)
-	var cloud_altitude = 500.0
+	var cloud_altitude = 700.0   # was 500.0 — match TutorialLevel.gd
 	var is_above_clouds = target.global_position.y > cloud_altitude
 	
 	if distance <= range_limit and not is_above_clouds:
@@ -74,7 +112,7 @@ func fire(dist: float) -> void:
 	
 	# PREDICTIVE AIMING CALCULATION
 	# Scale distance for shell travel time (0-1200 range -> ~1 to 4 seconds delay)
-	var travel_time = clamp(dist / 300.0, 1.0, 4.0)
+	var travel_time = clamp(dist / 300.0, 4, 5)
 	
 	# Use target's movement data (matched to new Airplane.gd names)
 	var target_speed_ms = target.get("current_speed_kmh") / 3.6 if "current_speed_kmh" in target else 100.0
@@ -104,5 +142,6 @@ func fire(dist: float) -> void:
 	var exp = explosion_scene.instantiate()
 	get_parent().add_child(exp)
 	exp.global_position = final_target
+	exp.scale = Vector3(bullet_size, bullet_size, bullet_size)
 	if exp.has_method("setup"):
 		exp.setup(travel_time)

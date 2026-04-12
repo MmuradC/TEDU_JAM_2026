@@ -5,11 +5,16 @@ extends Control
 @onready var quit_button = $CenterContainer/VBoxContainer/QuitButton
 @onready var options_menu = $OptionsMenu
 @onready var music_player = $AudioStreamPlayer
+@onready var background_video = $BackgroundVideo
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	options_menu.visible = false
 	start_button.grab_focus()
+
+	# Loop video manually if signal is needed
+	if background_video:
+		background_video.finished.connect(func(): background_video.play())
 
 	# Initialize Volume Slider
 	var master_bus = AudioServer.get_bus_index("Master")
