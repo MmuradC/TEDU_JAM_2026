@@ -1,0 +1,39 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://1_entities/3_objects/1_bullet/Explosion.gd" id="1_gd"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_marker"]
+radius = 2.5
+height = 5.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_marker"]
+transparency = 1
+cull_mode = 2
+albedo_color = Color(1, 0, 0, 0.6)
+emission_enabled = true
+emission = Color(1, 0, 0, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_boom"]
+radius = 10.0
+height = 20.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_boom"]
+transparency = 1
+cull_mode = 2
+albedo_color = Color(1, 1, 1, 0.8)
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 10.0
+
+[node name="Explosion" type="Node3D"]
+script = ExtResource("1_gd")
+
+[node name="TargetMarker" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_marker")
+surface_material_override/0 = SubResource("StandardMaterial3D_marker")
+
+[node name="ExplosionVisual" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("SphereMesh_boom")
+surface_material_override/0 = SubResource("StandardMaterial3D_boom")

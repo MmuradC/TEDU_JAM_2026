@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3 uid="uid://bc5w8x2wvc8f2"]
+
+[ext_resource type="Script" uid="uid://bc5w8x2wvc8f2" path="res://1_entities/3_objects/1_bullet/Bullet.gd" id="1_gd"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bullet"]
+size = Vector3(0.5, 0.5, 1.0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bullet"]
+albedo_color = Color(1, 0.8, 0, 1)
+emission_enabled = true
+emission = Color(1, 0.5, 0, 1)
+emission_energy_multiplier = 10.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_trajectory"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 1, 0, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_trajectory"]
+material = SubResource("StandardMaterial3D_trajectory")
+size = Vector3(0.02, 0.02, 1000)
+
+[node name="Bullet" type="Area3D"]
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1_gd")
+speed = 150.0
+lifetime = 4.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_bullet")
+
+[node name="Visual" type="CSGBox3D" parent="."]
+size = Vector3(0.1, 0.1, 0.4)
+material = SubResource("StandardMaterial3D_bullet")
+
+[node name="TrajectoryLine" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -500)
+mesh = SubResource("BoxMesh_trajectory")
