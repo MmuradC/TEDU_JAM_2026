@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b07goqip0s6oo"
-path.s3tc="res://.godot/imported/Ground054_1K-JPG_Color.jpg-35ddf78c3cbd5c73cbb9a6a99a83bd87.s3tc.ctex"
+path.s3tc="res://.godot/imported/Ground054_1K-JPG_Color.jpg-49f1fbf14d5969e2cc319aff00eb1241.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://5_addons/addons/terrabrush/Assets/Texturesss/Ground054_1K-JPG/Ground054_1K-JPG_Color.jpg"
-dest_files=["res://.godot/imported/Ground054_1K-JPG_Color.jpg-35ddf78c3cbd5c73cbb9a6a99a83bd87.s3tc.ctex"]
+source_file="res://addons/terrabrush/Assets/Texturesss/Ground054_1K-JPG/Ground054_1K-JPG_Color.jpg"
+dest_files=["res://.godot/imported/Ground054_1K-JPG_Color.jpg-49f1fbf14d5969e2cc319aff00eb1241.s3tc.ctex"]
 
 [params]
 

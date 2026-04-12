@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ig7s2oxgfg8f"
-path.s3tc="res://.godot/imported/Ground054_1K-JPG_Roughness.jpg-c375100f4a4a50b80df4e128eb3d4f09.s3tc.ctex"
+path.s3tc="res://.godot/imported/Ground054_1K-JPG_Roughness.jpg-099e8bf7e2018630e9c1344247874657.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://5_addons/addons/terrabrush/Assets/Texturesss/Ground054_1K-JPG/Ground054_1K-JPG_Roughness.jpg"
-dest_files=["res://.godot/imported/Ground054_1K-JPG_Roughness.jpg-c375100f4a4a50b80df4e128eb3d4f09.s3tc.ctex"]
+source_file="res://addons/terrabrush/Assets/Texturesss/Ground054_1K-JPG/Ground054_1K-JPG_Roughness.jpg"
+dest_files=["res://.godot/imported/Ground054_1K-JPG_Roughness.jpg-099e8bf7e2018630e9c1344247874657.s3tc.ctex"]
 
 [params]
 

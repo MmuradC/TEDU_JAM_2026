@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dnv8lhhw4yx46"
-path.s3tc="res://.godot/imported/Snow008C_1K-JPG_Displacement.jpg-5b3fc56877e62b9a28143c497720dc82.s3tc.ctex"
+path.s3tc="res://.godot/imported/Snow008C_1K-JPG_Displacement.jpg-7237ec7f3ae211a0cbc16b83a0cd6ff0.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://5_addons/addons/terrabrush/Assets/Texturesss/Snow008C_1K-JPG/Snow008C_1K-JPG_Displacement.jpg"
-dest_files=["res://.godot/imported/Snow008C_1K-JPG_Displacement.jpg-5b3fc56877e62b9a28143c497720dc82.s3tc.ctex"]
+source_file="res://addons/terrabrush/Assets/Texturesss/Snow008C_1K-JPG/Snow008C_1K-JPG_Displacement.jpg"
+dest_files=["res://.godot/imported/Snow008C_1K-JPG_Displacement.jpg-7237ec7f3ae211a0cbc16b83a0cd6ff0.s3tc.ctex"]
 
 [params]
 

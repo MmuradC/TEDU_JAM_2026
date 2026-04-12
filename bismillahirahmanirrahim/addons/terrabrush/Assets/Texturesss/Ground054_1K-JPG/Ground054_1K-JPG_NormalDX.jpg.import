@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://clx5qtk75r6lj"
-path="res://.godot/imported/Ground054_1K-JPG_NormalDX.jpg-c576add2d930e0e5bcc929cca9f24803.ctex"
+path="res://.godot/imported/Ground054_1K-JPG_NormalDX.jpg-53f3b2de9a6930a1835f5238d8b50469.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://5_addons/addons/terrabrush/Assets/Texturesss/Ground054_1K-JPG/Ground054_1K-JPG_NormalDX.jpg"
-dest_files=["res://.godot/imported/Ground054_1K-JPG_NormalDX.jpg-c576add2d930e0e5bcc929cca9f24803.ctex"]
+source_file="res://addons/terrabrush/Assets/Texturesss/Ground054_1K-JPG/Ground054_1K-JPG_NormalDX.jpg"
+dest_files=["res://.godot/imported/Ground054_1K-JPG_NormalDX.jpg-53f3b2de9a6930a1835f5238d8b50469.ctex"]
 
 [params]
 

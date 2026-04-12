@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d1os148qajqiw"
-path.s3tc="res://.godot/imported/Rock035_1K-JPG_Color.jpg-e8d6019dc50c9444f2df6255adfaac67.s3tc.ctex"
+path.s3tc="res://.godot/imported/Rock035_1K-JPG_Color.jpg-3913ede1b7a04b5c5f248c5aba6e6d1b.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://5_addons/addons/terrabrush/Assets/Texturesss/Rock035_1K-JPG/Rock035_1K-JPG_Color.jpg"
-dest_files=["res://.godot/imported/Rock035_1K-JPG_Color.jpg-e8d6019dc50c9444f2df6255adfaac67.s3tc.ctex"]
+source_file="res://addons/terrabrush/Assets/Texturesss/Rock035_1K-JPG/Rock035_1K-JPG_Color.jpg"
+dest_files=["res://.godot/imported/Rock035_1K-JPG_Color.jpg-3913ede1b7a04b5c5f248c5aba6e6d1b.s3tc.ctex"]
 
 [params]
 

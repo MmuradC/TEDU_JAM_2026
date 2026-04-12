@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://jo5b56pxyo4u"
-path.s3tc="res://.godot/imported/Ground054_1K-JPG_Displacement.jpg-c76563d2b1dc496c35ed7a43dbeb3f12.s3tc.ctex"
+path.s3tc="res://.godot/imported/Ground054_1K-JPG_Displacement.jpg-c7b2dd19712fed4a0cae05d0a6729090.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://5_addons/addons/terrabrush/Assets/Texturesss/Ground054_1K-JPG/Ground054_1K-JPG_Displacement.jpg"
-dest_files=["res://.godot/imported/Ground054_1K-JPG_Displacement.jpg-c76563d2b1dc496c35ed7a43dbeb3f12.s3tc.ctex"]
+source_file="res://addons/terrabrush/Assets/Texturesss/Ground054_1K-JPG/Ground054_1K-JPG_Displacement.jpg"
+dest_files=["res://.godot/imported/Ground054_1K-JPG_Displacement.jpg-c7b2dd19712fed4a0cae05d0a6729090.s3tc.ctex"]
 
 [params]
 

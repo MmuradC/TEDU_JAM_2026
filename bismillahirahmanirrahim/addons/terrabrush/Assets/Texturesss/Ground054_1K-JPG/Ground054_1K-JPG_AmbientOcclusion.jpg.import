@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b754i5lv200vk"
-path.s3tc="res://.godot/imported/Ground054_1K-JPG_AmbientOcclusion.jpg-ea4ebe8b310ce933d81f83dfcd12d702.s3tc.ctex"
+path.s3tc="res://.godot/imported/Ground054_1K-JPG_AmbientOcclusion.jpg-a94e60d14ff7f7c7083a9c3ef644ac66.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://5_addons/addons/terrabrush/Assets/Texturesss/Ground054_1K-JPG/Ground054_1K-JPG_AmbientOcclusion.jpg"
-dest_files=["res://.godot/imported/Ground054_1K-JPG_AmbientOcclusion.jpg-ea4ebe8b310ce933d81f83dfcd12d702.s3tc.ctex"]
+source_file="res://addons/terrabrush/Assets/Texturesss/Ground054_1K-JPG/Ground054_1K-JPG_AmbientOcclusion.jpg"
+dest_files=["res://.godot/imported/Ground054_1K-JPG_AmbientOcclusion.jpg-a94e60d14ff7f7c7083a9c3ef644ac66.s3tc.ctex"]
 
 [params]
 

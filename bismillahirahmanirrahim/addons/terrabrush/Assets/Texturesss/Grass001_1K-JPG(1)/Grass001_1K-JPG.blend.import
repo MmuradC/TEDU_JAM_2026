@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://dl7qm1ue3whei"
-path="res://.godot/imported/Grass001_1K-JPG.blend-622d7d153ae8ac4cd0f2b44df4dd6c06.scn"
+path="res://.godot/imported/Grass001_1K-JPG.blend-cb82c675dd5edb52cacafae2e184abe9.scn"
 
 [deps]
 
-source_file="res://5_addons/addons/terrabrush/Assets/Texturesss/Grass001_1K-JPG(1)/Grass001_1K-JPG.blend"
-dest_files=["res://.godot/imported/Grass001_1K-JPG.blend-622d7d153ae8ac4cd0f2b44df4dd6c06.scn"]
+source_file="res://addons/terrabrush/Assets/Texturesss/Grass001_1K-JPG(1)/Grass001_1K-JPG.blend"
+dest_files=["res://.godot/imported/Grass001_1K-JPG.blend-cb82c675dd5edb52cacafae2e184abe9.scn"]
 
 [params]
 

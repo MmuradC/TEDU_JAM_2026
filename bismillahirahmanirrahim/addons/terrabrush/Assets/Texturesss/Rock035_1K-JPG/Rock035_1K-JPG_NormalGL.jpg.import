@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cmw4vn8e3kekc"
-path.s3tc="res://.godot/imported/Rock035_1K-JPG_NormalGL.jpg-27adad91530a4b05758f64b11b463a7f.s3tc.ctex"
+path.s3tc="res://.godot/imported/Rock035_1K-JPG_NormalGL.jpg-6e8c28b47b78d6cd42cfe2e1be26214d.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://5_addons/addons/terrabrush/Assets/Texturesss/Rock035_1K-JPG/Rock035_1K-JPG_NormalGL.jpg"
-dest_files=["res://.godot/imported/Rock035_1K-JPG_NormalGL.jpg-27adad91530a4b05758f64b11b463a7f.s3tc.ctex"]
+source_file="res://addons/terrabrush/Assets/Texturesss/Rock035_1K-JPG/Rock035_1K-JPG_NormalGL.jpg"
+dest_files=["res://.godot/imported/Rock035_1K-JPG_NormalGL.jpg-6e8c28b47b78d6cd42cfe2e1be26214d.s3tc.ctex"]
 
 [params]
 

@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dvxj888r8wuju"
-path.s3tc="res://.godot/imported/Grass001_1K-JPG_AmbientOcclusion.jpg-57f1c20be6b476122de7f468ec2fc89e.s3tc.ctex"
+path.s3tc="res://.godot/imported/Grass001_1K-JPG_AmbientOcclusion.jpg-04d3b6064544c8e98fcd56d8a5f0e1b2.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://5_addons/addons/terrabrush/Assets/Texturesss/Grass001_1K-JPG(1)/Grass001_1K-JPG_AmbientOcclusion.jpg"
-dest_files=["res://.godot/imported/Grass001_1K-JPG_AmbientOcclusion.jpg-57f1c20be6b476122de7f468ec2fc89e.s3tc.ctex"]
+source_file="res://addons/terrabrush/Assets/Texturesss/Grass001_1K-JPG(1)/Grass001_1K-JPG_AmbientOcclusion.jpg"
+dest_files=["res://.godot/imported/Grass001_1K-JPG_AmbientOcclusion.jpg-04d3b6064544c8e98fcd56d8a5f0e1b2.s3tc.ctex"]
 
 [params]
 

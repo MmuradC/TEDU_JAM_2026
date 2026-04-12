@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cjjsnurj0mkpp"
-path="res://.godot/imported/Grass001_1K-JPG_NormalDX.jpg-81e6ac7f04164da8f930da2089777398.ctex"
+path="res://.godot/imported/Grass001_1K-JPG_NormalDX.jpg-ee3c9639afaf2506fe55ac43f5b8f357.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://5_addons/addons/terrabrush/Assets/Texturesss/Grass001_1K-JPG(1)/Grass001_1K-JPG_NormalDX.jpg"
-dest_files=["res://.godot/imported/Grass001_1K-JPG_NormalDX.jpg-81e6ac7f04164da8f930da2089777398.ctex"]
+source_file="res://addons/terrabrush/Assets/Texturesss/Grass001_1K-JPG(1)/Grass001_1K-JPG_NormalDX.jpg"
+dest_files=["res://.godot/imported/Grass001_1K-JPG_NormalDX.jpg-ee3c9639afaf2506fe55ac43f5b8f357.ctex"]
 
 [params]
 
