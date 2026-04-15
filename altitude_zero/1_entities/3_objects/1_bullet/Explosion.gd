@@ -68,8 +68,8 @@ func explode() -> void:
 		boom_player.play()
 	
 	var player = get_tree().get_first_node_in_group("player")
-	if player:
-		var blast_radius = 25.0
+	if is_instance_valid(player):
+		var blast_radius = 7.5 # 1.5 times bigger than previous 5.0
 		var max_damage = 40.0
 		var distance = global_position.distance_to(player.global_position)
 		
@@ -84,4 +84,5 @@ func explode() -> void:
 	
 	# Wait for visual effect and sound to finish then free
 	await get_tree().create_timer(1.0).timeout
-	queue_free()
+	if is_instance_valid(self) and not is_queued_for_deletion():
+		queue_free()

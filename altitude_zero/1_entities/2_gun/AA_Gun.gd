@@ -3,8 +3,11 @@ extends StaticBody3D
 @export var min_fire_rate: float = 2.0 
 @export var max_fire_rate: float = 4.0 
 @export var rotation_speed: float = 5.0 
-@export var range_limit: float = 1200.0 # Increased range for 1km altitude
-@export var deviation_limit: float = 40.0 
+@export var range_limit: float = 750.0 
+@export var deviation_limit: float = 30.0 
+
+@export var look_ahead_time: float = 0.2 # Match bombing speed
+
 
 var target: Node3D = null
 var is_in_range: bool = false
@@ -40,10 +43,10 @@ func _ready() -> void:
 		shoot_sound.max_distance = 5000.0
 
 func _process(delta: float) -> void:
-	if not target: return
+	if not is_instance_valid(target): return
 	
 	var distance = global_position.distance_to(target.global_position)
-	var cloud_altitude = 500.0
+	var cloud_altitude = 165.0 # Synced with TutorialLevel
 	var is_above_clouds = target.global_position.y > cloud_altitude
 	
 	if distance <= range_limit and not is_above_clouds:
@@ -70,28 +73,26 @@ func _process(delta: float) -> void:
 func fire(dist: float) -> void:
 	muzzle_flash.visible = true
 	shoot_sound.play()
-	get_tree().create_timer(0.1).timeout.connect(func(): muzzle_flash.visible = false)
+	get_tree().create_timer(0.1).timeout.connect(func(): if is_instance_valid(muzzle_flash): muzzle_flash.visible = false)
 	
 	# PREDICTIVE AIMING CALCULATION
-	# Scale distance for shell travel time (0-1200 range -> ~1 to 4 seconds delay)
-	var travel_time = clamp(dist / 300.0, 1.0, 4.0)
-	
-	# Use target's movement data (matched to new Airplane.gd names)
-	var target_speed_ms = target.get("current_speed_kmh") / 3.6 if "current_speed_kmh" in target else 100.0
+	# Use target's movement data with visual_multiplier (10.0) from Airplane.gd
+	var visual_multiplier = 10.0
+	var target_speed_ms = (target.get("current_speed_kmh") / 3.6) * visual_multiplier if "current_speed_kmh" in target else 100.0
 	var sim_pos = target.global_position
 	var sim_basis = target.global_transform.basis
-	var step_dt = travel_time / 10.0
+	var step_dt = look_ahead_time / 10.0
 	
 	# Simple simulation of airplane trajectory for prediction
 	var turn_data = target.get("current_turn_speed") if "current_turn_speed" in target else Vector2.ZERO
 	for i in range(10):
 		sim_basis = Basis(Vector3.UP, deg_to_rad(turn_data.x * step_dt)) * sim_basis
-		sim_basis = sim_basis.rotated(sim_basis.x, deg_to_rad(turn_data.y * step_dt))
+		sim_basis = sim_basis.rotated(sim_basis.x.normalized(), deg_to_rad(turn_data.y * step_dt))
 		sim_pos += -sim_basis.z * target_speed_ms * step_dt
 	
-	# Dynamic Deviation (Accuracy drops if more AA are active)
+	# Dynamic Deviation (Accuracy drops if more AA are active to avoid "sniping" the player)
 	var active_aa = target.get("active_aa_count") if "active_aa_count" in target else 1
-	var deviation = remap(clamp(active_aa, 1, 30), 1, 30, 5.0, deviation_limit)
+	var deviation = lerp(5.0, deviation_limit, clamp(float(active_aa - 1) / 8.0, 0.0, 1.0))
 	
 	var deviation_vec = Vector3(
 		randf_range(-deviation, deviation),
@@ -100,9 +101,49 @@ func fire(dist: float) -> void:
 	)
 	var final_target = sim_pos + deviation_vec
 	
+	# Shell visual timing
+	var travel_time = clamp(dist / 600.0, look_ahead_time, 5.0)
+	
+	# Visual Tracer
+	create_tracer(muzzle_flash.global_position, final_target, travel_time)
+	
 	# Spawn explosion at predicted point
 	var exp = explosion_scene.instantiate()
 	get_parent().add_child(exp)
 	exp.global_position = final_target
 	if exp.has_method("setup"):
 		exp.setup(travel_time)
+
+func create_tracer(start: Vector3, end: Vector3, time: float):
+	var tracer = MeshInstance3D.new()
+	var mesh = ImmediateMesh.new()
+	var mat = StandardMaterial3D.new()
+	
+	tracer.mesh = mesh
+	tracer.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color(1.0, 0.7, 0.1) # Bright tracer orange/yellow
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	
+	get_tree().root.add_child(tracer)
+	
+	var duration = 0.0
+	while duration < time:
+		duration += get_process_delta_time()
+		var t = duration / time
+		var current_head = start.lerp(end, t)
+		var trail_length = 15.0
+		var current_tail = start.lerp(end, max(0.0, t - (trail_length / start.distance_to(end))))
+		
+		mesh.clear_surfaces()
+		mesh.surface_begin(Mesh.PRIMITIVE_LINES, mat)
+		mesh.surface_add_vertex(current_tail)
+		mesh.surface_add_vertex(current_head)
+		mesh.surface_end()
+		
+		# Safety check: if scene changes or gun is removed, abort
+		if not is_inside_tree(): break
+		await get_tree().process_frame
+	
+	if is_instance_valid(tracer):
+		tracer.queue_free()

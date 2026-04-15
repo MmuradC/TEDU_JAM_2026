@@ -16,6 +16,16 @@ config/features=PackedStringArray("4.6", "Forward Plus")
 boot_splash/image="uid://cw8ri2246fjjl"
 config/icon="uid://cw8ri2246fjjl"
 
+[autoload]
+
+GlobalState="*res://4_singleton/GlobalState.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="canvas_items"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

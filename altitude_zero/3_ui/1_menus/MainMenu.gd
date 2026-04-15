@@ -21,16 +21,25 @@ func _ready():
 		music_player.play()
 
 func _on_start_button_pressed():
-	get_tree().change_scene_to_file("res://2_zone/1_tutorial/TutorialLevel.tscn")
+	var global = get_node_or_null("/root/GlobalState")
+	if global:
+		global.play_cutscene("res://3_ui/4_cutscene/beginning.ogv", "res://2_zone/1_tutorial/TutorialLevel.tscn")
+	else:
+		get_tree().change_scene_to_file("res://2_zone/1_tutorial/TutorialLevel.tscn")
 
 func _on_options_button_pressed():
 	options_menu.visible = true
+	$CenterContainer.visible = false
+	$Logo.visible = false
 
 func _on_quit_button_pressed():
 	get_tree().quit()
 
 func _on_back_button_pressed():
 	options_menu.visible = false
+	$CenterContainer.visible = true
+	$Logo.visible = true
+	start_button.grab_focus()
 
 func _on_volume_slider_value_changed(value: float) -> void:
 	var master_bus = AudioServer.get_bus_index("Master")

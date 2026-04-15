@@ -1,0 +1,4 @@
+[gd_scene format=3 uid="uid://bbmyc34wa8bef"]
+
+[node name="TerraBrush" type="TerraBrush" unique_id=796708218]
+metadata/_edit_lock_ = false

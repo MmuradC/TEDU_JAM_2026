@@ -1,6 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://dbm26e662ndn6"]
+[gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://dbm26e662ndn6" path="res://1_entities/3_objects/1_bullet/Explosion.gd" id="1_gd"]
+[ext_resource type="Script" uid="uid://dbm26e662ndn6" path="res://1_entities/3_objects/1_bullet/Explosion.gd" id="Script_Explosion"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_marker"]
 radius = 2.5
@@ -27,7 +27,7 @@ emission = Color(1, 1, 1, 1)
 emission_energy_multiplier = 10.0
 
 [node name="Explosion" type="Node3D"]
-script = ExtResource("1_gd")
+script = ExtResource("Script_Explosion")
 
 [node name="TargetMarker" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_marker")
