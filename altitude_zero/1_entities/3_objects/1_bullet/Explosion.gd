@@ -69,7 +69,7 @@ func explode() -> void:
 	
 	var player = get_tree().get_first_node_in_group("player")
 	if is_instance_valid(player):
-		var blast_radius = 7.5 # 1.5 times bigger than previous 5.0
+		var blast_radius = 7.0 # Reduced by 25% from 9.375
 		var max_damage = 40.0
 		var distance = global_position.distance_to(player.global_position)
 		

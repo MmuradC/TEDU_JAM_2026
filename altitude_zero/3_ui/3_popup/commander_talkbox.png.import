@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cw8ri2246fjjl"
-path="res://.godot/imported/logo_square_fix.png-6198d248bfca34d49ac5a51ad6dff6db.ctex"
+uid="uid://ckwghew433yi"
+path="res://.godot/imported/commander_talkbox.png-b5173261dbb96bda329163870ca4b88a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://logo_square_fix.png"
-dest_files=["res://.godot/imported/logo_square_fix.png-6198d248bfca34d49ac5a51ad6dff6db.ctex"]
+source_file="res://3_ui/3_popup/commander_talkbox.png"
+dest_files=["res://.godot/imported/commander_talkbox.png-b5173261dbb96bda329163870ca4b88a.ctex"]
 
 [params]
 

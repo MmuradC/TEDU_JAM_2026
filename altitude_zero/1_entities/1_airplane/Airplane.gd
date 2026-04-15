@@ -56,10 +56,23 @@ var current_energy: float = 100.0
 @onready var ground = get_tree().root.find_child("Ground", true, false)
 
 func find_ui_node(node_name: String) -> Node:
-	var ui = get_tree().root.find_child("UI", true, false)
-	if ui:
-		return ui.find_child(node_name, true, false)
+	var root = get_tree().root.get_child(0) if get_tree().root.get_child_count() > 0 else null
+	if root:
+		var ui = root.find_child("UI", true, false)
+		if ui:
+			return ui.find_child(node_name, true, false)
 	return null
+
+func sync_ui_references():
+	energy_bar = find_ui_node("EnergyBar")
+	speed_label = find_ui_node("SpeedLabel")
+	health_bar = find_ui_node("HealthBar")
+	hit_indicator = find_ui_node("HitIndicator")
+	aa_label = find_ui_node("AALabel")
+	mouse_crosshair = find_ui_node("MouseCrosshair")
+	plane_crosshair = find_ui_node("PlaneCrosshair")
+	ww2_viewfinder = find_ui_node("WW2Viewfinder")
+	speed_arrow = find_ui_node("SpeedArrow")
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -74,6 +87,10 @@ func _ready() -> void:
 	if camera:
 		camera.fov = 60.0 # Smaller FOV for Third Person
 	
+	# Attempt to find UI nodes immediately and again after a short delay
+	sync_ui_references()
+	get_tree().create_timer(0.5).timeout.connect(sync_ui_references)
+
 	if engine_sound and not engine_sound.playing:
 		engine_sound.play()
 		engine_sound.unit_size = 50.0 # Louder and more persistent
@@ -83,6 +100,11 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		frame_mouse_input += event.relative
 		virtual_mouse_offset += event.relative
+		
+		# MOUSE THROTTLE: Moving mouse DOWN (positive y) increases throttle
+		# Moving mouse UP (negative y) decreases throttle
+		base_target_speed += event.relative.y * 0.2
+		base_target_speed = clamp(base_target_speed, min_speed, max_speed)
 	
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		if Input.is_key_pressed(KEY_C):
@@ -102,7 +124,7 @@ func handle_movement(delta: float) -> void:
 	var throttle_axis = Input.get_axis("ui_down", "ui_up") # W/Up is positive (accelerate), S/Down is negative (decelerate)
 	if throttle_axis != 0:
 		var target_throttle = max_speed if throttle_axis > 0 else min_speed
-		base_target_speed = move_toward(base_target_speed, target_throttle, 100.0 * delta)
+		base_target_speed = move_toward(base_target_speed, target_throttle, 200.0 * delta)
 
 	# DYNAMIC SPEED (Energy Management)
 	var forward_vector = -global_transform.basis.z
@@ -115,8 +137,8 @@ func handle_movement(delta: float) -> void:
 	else: # Diving: gain speed from gravity
 		target_speed = lerp(base_target_speed, max_speed, -pitch_factor)
 	
-	# Realistic acceleration rates
-	var accel_rate = 150.0 if pitch_factor < 0 or target_speed > current_speed_kmh else 80.0
+	# Realistic acceleration rates - significantly faster to feel the weight/gravity
+	var accel_rate = 400.0 if pitch_factor < 0 or target_speed > current_speed_kmh else 250.0
 	current_speed_kmh = move_toward(current_speed_kmh, target_speed, accel_rate * delta)
 	
 	# Apply translation with a visual scale multiplier to make movement feel "right" for the world size

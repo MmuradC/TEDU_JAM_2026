@@ -1,12 +1,13 @@
 [gd_scene format=3 uid="uid://crfi70c2b7jxm"]
 
-[ext_resource type="Texture2D" uid="uid://bjhv2li4vget6" path="res://icon.svg" id="1_ahy7m"]
+[ext_resource type="Texture2D" uid="uid://bg84qwauide88" path="res://icon.svg" id="1_ahy7m"]
 [ext_resource type="Script" uid="uid://prgnplvsxtjh" path="res://2_zone/1_tutorial/TutorialLevel.gd" id="1_level_script"]
 [ext_resource type="Script" uid="uid://b128sons3xxpd" path="res://1_entities/1_airplane/Airplane.gd" id="2_h44x5"]
 [ext_resource type="AudioStream" uid="uid://ckblt0i0a1vj6" path="res://1_entities/1_airplane/tedu_motor.ogg" id="2_motor_stream"]
 [ext_resource type="AudioStream" uid="uid://dsk6iipw47jvd" path="res://2_zone/1_tutorial/tedu_ruzgar.ogg" id="2_v0t7o"]
 [ext_resource type="PackedScene" uid="uid://0xyg0awvdx6o" path="res://1_entities/1_airplane/bf109.fbx" id="3_r4ypy"]
 [ext_resource type="PackedScene" path="res://1_entities/2_gun/AA_Gun.tscn" id="4_8bb2v"]
+[ext_resource type="Texture2D" uid="uid://ckwghew433yi" path="res://3_ui/3_popup/commander_talkbox.png" id="5_euem2"]
 [ext_resource type="Shader" uid="uid://c7qjjipoulwmo" path="res://2_zone/1_tutorial/Ground.gdshader" id="5_shader_ground"]
 [ext_resource type="Shader" uid="uid://dvmubh3nrp4ri" path="res://2_zone/1_tutorial/CinematicPostProcess.gdshader" id="6_shader_post"]
 [ext_resource type="Shader" uid="uid://dlt2yxmqbsf2g" path="res://2_zone/1_tutorial/BoundaryGrid.gdshader" id="8_shader_boundary"]
@@ -110,15 +111,11 @@ glow_intensity = 0.2
 glow_strength = 0.5
 glow_bloom = 0.1
 fog_enabled = true
-fog_light_color = Color(0.518, 0.541, 0.58, 1)
-fog_density = 0.0015
-fog_sky_affect = 0.5
-volumetric_fog_enabled = true
-volumetric_fog_density = 0.005
-volumetric_fog_albedo = Color(0.63, 0.63, 0.63, 1)
 fog_light_color = Color(0.3, 0.35, 0.4, 1)
 fog_density = 0.0001
 fog_aerial_perspective = 1.0
+fog_sky_affect = 0.5
+volumetric_fog_enabled = true
 volumetric_fog_density = 0.01
 volumetric_fog_albedo = Color(0.8, 0.85, 0.9, 1)
 volumetric_fog_emission = Color(0.02, 0.02, 0.02, 1)
@@ -272,32 +269,16 @@ volume_db = -2.0
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1334943460]
 
-[node name="SpeedLabel" type="Label" parent="UI" unique_id=1775500627]
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -200.0
-offset_top = 230.0
-offset_right = -20.0
-offset_bottom = 260.0
-grow_horizontal = 0
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 28
-text = "SPEED: 0 KM/H"
-horizontal_alignment = 2
-
 [node name="SpeedGauge" type="TextureRect" parent="UI" unique_id=50474243]
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -160.0
-offset_top = -160.0
-offset_right = -20.0
-offset_bottom = -20.0
+offset_left = -190.0
+offset_top = -171.0
+offset_right = -50.0
+offset_bottom = -31.0
 grow_horizontal = 0
 grow_vertical = 0
 texture = ExtResource("14_knotgauge")
@@ -326,10 +307,10 @@ stretch_mode = 5
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -200.0
-offset_top = 265.0
-offset_right = -20.0
-offset_bottom = 295.0
+offset_left = -213.0
+offset_top = 841.0
+offset_right = -33.0
+offset_bottom = 880.0
 grow_horizontal = 0
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_offset_x = 2
@@ -383,7 +364,7 @@ offset_bottom = -20.0
 grow_vertical = 0
 theme_override_colors/font_color = Color(1, 0.8, 0, 1)
 theme_override_font_sizes/font_size = 20
-text = "UYARI: ANTI-AIR MENZİLİNDESİNİZ!"
+text = "WARNING: ANTI-AIR MENZİLİNDESİNİZ!"
 
 [node name="MouseCrosshair" type="Control" parent="UI" unique_id=1116037045]
 layout_mode = 3
@@ -514,10 +495,10 @@ horizontal_alignment = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = 20.0
-offset_top = -100.0
-offset_right = 400.0
-offset_bottom = 100.0
+offset_left = 29.0
+offset_top = -284.0
+offset_right = 501.0
+offset_bottom = -84.0
 grow_vertical = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_offset_x = 2
@@ -541,20 +522,28 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.4)
 
 [node name="DialogFrame" type="TextureRect" parent="UI" unique_id=664317162]
-visible = false
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -400.0
-offset_top = -180.0
-offset_right = 400.0
-offset_bottom = -30.0
+offset_left = -341.0
+offset_top = -178.0
+offset_right = 459.0
+offset_bottom = -28.0
 grow_horizontal = 2
 grow_vertical = 0
 expand_mode = 1
 stretch_mode = 5
+
+[node name="DialogPhoto" type="TextureRect" parent="UI/DialogFrame" unique_id=924052713]
+layout_mode = 0
+offset_left = -206.0
+offset_top = -111.0
+offset_right = 3311.0
+offset_bottom = 757.0
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("5_euem2")
 
 [node name="DialogText" type="Label" parent="UI/DialogFrame" unique_id=1755859154]
 layout_mode = 1
@@ -580,17 +569,18 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = -25.0
-offset_right = 300.0
-offset_bottom = 25.0
+offset_left = -484.0
+offset_top = -141.0
+offset_right = 514.0
+offset_bottom = -38.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_offset_x = 3
 theme_override_constants/shadow_offset_y = 3
 theme_override_font_sizes/font_size = 36
-text = "OBJECTIVE COMPLETED, PRESS ENTER FOR NEXT MISSION!"
+text = "OBJECTIVE COMPLETED
+GREAT JOB KAMERAD!"
 horizontal_alignment = 1
 
 [node name="BoundaryWarningLabel" type="Label" parent="UI" unique_id=1728299737]
@@ -600,10 +590,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -400.0
-offset_top = -150.0
-offset_right = 400.0
-offset_bottom = -100.0
+offset_left = -495.0
+offset_top = 73.0
+offset_right = 460.0
+offset_bottom = 123.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(1, 0, 0, 1)
@@ -634,6 +624,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="FadeLayer" type="ColorRect" parent="UI" unique_id=1796361248]
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -655,11 +646,12 @@ color = Color(1, 1, 1, 0)
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -220.0
-offset_top = 130.0
-offset_right = -20.0
-offset_bottom = 330.0
+offset_left = -271.0
+offset_top = 32.0
+offset_right = -71.0
+offset_bottom = 232.0
 grow_horizontal = 0
+scale = Vector2(1.2, 1.2)
 
 [node name="SubViewport" type="SubViewport" parent="UI/MiniMapContainer" unique_id=290647744]
 handle_input_locally = false
@@ -784,24 +776,25 @@ mesh = SubResource("SphereMesh_damage_smoke")
 direction = Vector3(0, 1, 1)
 spread = 20.0
 gravity = Vector3(0, 2, 0)
-initial_velocity_min = 2.0
-initial_velocity_max = 5.0
-scale_amount_min = 0.5
-scale_amount_max = 2.0
+initial_velocity_min = 0.5
+initial_velocity_max = 1.0
+scale_amount_min = 0.02
+scale_amount_max = 0.2
 scale_amount_curve = SubResource("Curve_smoke_scale")
 color_ramp = SubResource("Gradient_smoke_color")
 
 [node name="FireParticles" type="CPUParticles3D" parent="AirplaneContainer" unique_id=69512181]
 emitting = false
-amount = 20
-lifetime = 0.5
+amount = 15
+lifetime = 0.4
 mesh = SubResource("SphereMesh_damage_fire")
 direction = Vector3(0, 1, 1)
-spread = 30.0
-gravity = Vector3(0, 5, 0)
-initial_velocity_min = 5.0
-initial_velocity_max = 10.0
-scale_amount_min = 0.2
+spread = 20.0
+gravity = Vector3(0, 3, 0)
+initial_velocity_min = 1.0
+initial_velocity_max = 2.0
+scale_amount_min = 0.01
+scale_amount_max = 0.05
 color = Color(1, 0.4, 0, 1)
 
 [node name="NoseRayCast" type="RayCast3D" parent="AirplaneContainer" unique_id=1010659626]
@@ -864,8 +857,8 @@ transform = Transform3D(0.31436718, 0, 0, 0, 1, 0, 0, 0, 0.44523698, 33.28499, 8
 transform = Transform3D(0.31436718, 0, 0, 0, 1, 0, 0, 0, 0.44523698, 45.85968, 8.268623, 14.27948)
 
 [node name="PhotoTarget" type="Area3D" parent="Bases/Base1" unique_id=1161582699 groups=["photograph_target"]]
-collision_mask = 2
 transform = Transform3D(0.31436718, 0, 0, 0, 1, 0, 0, 0, 0.44523698, 39.572342, 8.268623, 23.18422)
+collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bases/Base1/PhotoTarget" unique_id=417562456]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, 0)
@@ -910,8 +903,8 @@ transform = Transform3D(0.294271, 0, 0, 0, 1, 0, 0, 0, 0.3146866, 15.097488, 6.6
 transform = Transform3D(0.294271, 0, 0, 0, 1, 0, 0, 0, 0.3146866, -2.5587616, 6.645859, -9.221069)
 
 [node name="PhotoTarget" type="Area3D" parent="Bases/Base2" unique_id=1903137066 groups=["photograph_target"]]
-collision_mask = 2
 transform = Transform3D(0.294271, 0, 0, 0, 1, 0, 0, 0, 0.3146866, 6.2693634, 6.645859, -18.661682)
+collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bases/Base2/PhotoTarget" unique_id=113608900]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, 0)
@@ -959,8 +952,8 @@ transform = Transform3D(0.26517862, 0.5872515, 0.027320305, -0.19328001, 0.80888
 transform = Transform3D(0.26517862, 0.5872515, 0.027320305, -0.19328001, 0.80888134, -0.005628012, -0.021100832, -0.029100396, 0.39489162, -38.939453, 0.035705566, -104.61734)
 
 [node name="PhotoTarget" type="Area3D" parent="Bases/Base3" unique_id=548916273 groups=["photograph_target"]]
-collision_mask = 2
 transform = Transform3D(0.26517862, 0.5872515, 0.027320305, -0.19328001, 0.80888134, -0.005628012, -0.021100832, -0.029100396, 0.39489162, -32.992996, -4.6555977, -115.01715)
+collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bases/Base3/PhotoTarget" unique_id=1481759586]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, 0)

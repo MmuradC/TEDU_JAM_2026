@@ -4,12 +4,12 @@ extends StaticBody3D
 @export var max_fire_rate: float = 4.0 
 @export var rotation_speed: float = 5.0 
 @export var range_limit: float = 750.0 
-@export var deviation_limit: float = 30.0 
+@export var deviation_limit: float = 10.0 
 
-@export var look_ahead_time: float = 0.2 # Match bombing speed
-
+@export var look_ahead_time: float = 0.5 # Increased prediction range
 
 var target: Node3D = null
+
 var is_in_range: bool = false
 var timer: float = 0.0
 var current_cooldown: float = 3.0
@@ -68,7 +68,7 @@ func _process(delta: float) -> void:
 			is_in_range = false
 			if target.has_method("register_aa_in_range"): target.register_aa_in_range(false)
 		muzzle_flash.visible = false
-		timer = current_cooldown
+		timer = 0.0 # Reset timer so it doesn't fire immediately upon re-entry
 
 func fire(dist: float) -> void:
 	muzzle_flash.visible = true
@@ -92,7 +92,7 @@ func fire(dist: float) -> void:
 	
 	# Dynamic Deviation (Accuracy drops if more AA are active to avoid "sniping" the player)
 	var active_aa = target.get("active_aa_count") if "active_aa_count" in target else 1
-	var deviation = lerp(5.0, deviation_limit, clamp(float(active_aa - 1) / 8.0, 0.0, 1.0))
+	var deviation = lerp(2.0, deviation_limit, clamp(float(active_aa - 1) / 8.0, 0.0, 1.0))
 	
 	var deviation_vec = Vector3(
 		randf_range(-deviation, deviation),

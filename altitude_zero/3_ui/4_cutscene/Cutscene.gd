@@ -1,6 +1,6 @@
 extends Node
 
-@onready var video = $VideoStreamPlayer
+@onready var video = $CutsceneVideo
 
 func _ready():
 	var global = get_node_or_null("/root/GlobalState")

@@ -13,8 +13,8 @@ config_version=5
 config/name="Altitude Zero"
 run/main_scene="res://3_ui/1_menus/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
-boot_splash/image="uid://cw8ri2246fjjl"
-config/icon="uid://cw8ri2246fjjl"
+boot_splash/image="uid://cyxm7m4yc3ivg"
+config/icon="uid://cyxm7m4yc3ivg"
 
 [autoload]
 

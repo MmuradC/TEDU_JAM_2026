@@ -1,12 +1,10 @@
-[gd_scene format=3 uid="uid://bcnmexjfiurx5"]
+[gd_scene format=3 uid="uid://dyo1wwryeswvc"]
 
-[ext_resource type="Script" uid="uid://b4t4wusdemadr" path="res://3_ui/4_cutscene/Cutscene.gd" id="1_nh6xf"]
-[ext_resource type="VideoStream" uid="uid://cvnosr3j0knlo" path="res://3_ui/4_cutscene/end_scene.ogv" id="2_02ej1"]
+[ext_resource type="Script" uid="uid://chiem5red6isv" path="res://3_ui/4_cutscene/Cutscene.gd" id="1_nh6xf"]
 
 [node name="Cutscene" type="Node" unique_id=1869765524]
 script = ExtResource("1_nh6xf")
 
-[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="." unique_id=311400215]
+[node name="CutsceneVideo" type="VideoStreamPlayer" parent="." unique_id=311400215]
 offset_right = 40.0
 offset_bottom = 40.0
-stream = ExtResource("2_02ej1")

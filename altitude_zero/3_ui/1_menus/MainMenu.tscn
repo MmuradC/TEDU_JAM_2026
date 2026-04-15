@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cm0cc610ku6h" path="res://3_ui/1_menus/MainMenu.gd" id="1_33kg5"]
 [ext_resource type="VideoStream" uid="uid://mf2ygtbs13jy" path="res://3_ui/1_menus/renderback.ogv" id="2_1b6i6"]
 [ext_resource type="AudioStream" uid="uid://bek73gsf2ude7" path="res://3_ui/1_menus/tedujammenü.ogg" id="2_ua3l5"]
-[ext_resource type="Texture2D" uid="uid://cw8ri2246fjjl" path="res://logo_square_fix.png" id="3_1b6i6"]
+[ext_resource type="Texture2D" uid="uid://cyxm7m4yc3ivg" path="res://logo.png" id="3_cgi28"]
 [ext_resource type="Texture2D" uid="uid://dj0lw0mfk65p6" path="res://3_ui/1_menus/buttons/divein.png" id="4_10cig"]
 [ext_resource type="Texture2D" uid="uid://cmixyjv1hucwi" path="res://3_ui/1_menus/buttons/options.png" id="5_cgi28"]
 [ext_resource type="Texture2D" uid="uid://dsjbxidoj8d0e" path="res://3_ui/1_menus/buttons/abortmission.png" id="6_cgi28"]
@@ -32,7 +32,7 @@ offset_top = -149.0
 offset_right = 2142.0
 offset_bottom = 1899.0
 scale = Vector2(0.4, 0.4)
-texture = ExtResource("3_1b6i6")
+texture = ExtResource("3_cgi28")
 
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=1101201365]
 layout_mode = 1
