@@ -1,10 +1,10 @@
 extends StaticBody3D
 
-@export var min_fire_rate: float = 2.0 
-@export var max_fire_rate: float = 4.0 
+@export var min_fire_rate: float = 1.5 
+@export var max_fire_rate: float = 3.5 
 @export var rotation_speed: float = 5.0 
-@export var range_limit: float = 750.0 
-@export var deviation_limit: float = 10.0 
+@export var range_limit: float = 150.0 
+@export var deviation_limit: float = 2.0 
 
 @export var look_ahead_time: float = 0.5 # Increased prediction range
 
@@ -75,44 +75,61 @@ func fire(dist: float) -> void:
 	shoot_sound.play()
 	get_tree().create_timer(0.1).timeout.connect(func(): if is_instance_valid(muzzle_flash): muzzle_flash.visible = false)
 	
-	# PREDICTIVE AIMING CALCULATION
-	# Use target's movement data with visual_multiplier (10.0) from Airplane.gd
-	var visual_multiplier = 10.0
-	var target_speed_ms = (target.get("current_speed_kmh") / 3.6) * visual_multiplier if "current_speed_kmh" in target else 100.0
-	var sim_pos = target.global_position
-	var sim_basis = target.global_transform.basis
-	var step_dt = look_ahead_time / 10.0
+	# PREDICTIVE AIMING CALCULATION (Linear Intercept)
+	var visual_multiplier = 11.0 # Matched with Airplane.gd
+	var current_speed = target.get("current_speed_kmh") if "current_speed_kmh" in target else 240.0
+	var target_velocity = -target.global_transform.basis.z * (current_speed / 3.6) * visual_multiplier
+	var shell_speed = 150.0 # Significantly reduced for visibility
 	
-	# Simple simulation of airplane trajectory for prediction
-	var turn_data = target.get("current_turn_speed") if "current_turn_speed" in target else Vector2.ZERO
-	for i in range(10):
-		sim_basis = Basis(Vector3.UP, deg_to_rad(turn_data.x * step_dt)) * sim_basis
-		sim_basis = sim_basis.rotated(sim_basis.x.normalized(), deg_to_rad(turn_data.y * step_dt))
-		sim_pos += -sim_basis.z * target_speed_ms * step_dt
+	var gun_pos = muzzle_flash.global_position
+	var target_pos = target.global_position
+	var to_target = target_pos - gun_pos
 	
-	# Dynamic Deviation (Accuracy drops if more AA are active to avoid "sniping" the player)
+	# Quadratic Equation: (V.V - S^2)t^2 + 2(D.V)t + D.D = 0
+	var a = target_velocity.dot(target_velocity) - (shell_speed * shell_speed)
+	var b = 2.0 * to_target.dot(target_velocity)
+	var c = to_target.dot(to_target)
+	
+	var discriminant = b * b - 4.0 * a * c
+	var found_t = 0.0
+	
+	if discriminant > 0:
+		var t1 = (-b + sqrt(discriminant)) / (2.0 * a)
+		var t2 = (-b - sqrt(discriminant)) / (2.0 * a)
+		
+		if t1 > 0 and t2 > 0:
+			found_t = min(t1, t2)
+		elif t1 > 0:
+			found_t = t1
+		elif t2 > 0:
+			found_t = t2
+	
+	if found_t == 0.0:
+		found_t = dist / shell_speed
+	
+	# Add a "lead bias" to make bullets appear further ahead of the plane
+	var lead_bias = 0.2 
+	var final_target = target_pos + (target_velocity * (found_t + lead_bias))
+	
+	# Dynamic Deviation
 	var active_aa = target.get("active_aa_count") if "active_aa_count" in target else 1
-	var deviation = lerp(2.0, deviation_limit, clamp(float(active_aa - 1) / 8.0, 0.0, 1.0))
+	var deviation = lerp(1.0, deviation_limit, clamp(float(active_aa - 1) / 4.0, 0.0, 1.0))
+	var deviation_vec = Vector3(randf_range(-deviation, deviation), randf_range(-deviation, deviation), randf_range(-deviation, deviation))
+	final_target += deviation_vec
 	
-	var deviation_vec = Vector3(
-		randf_range(-deviation, deviation),
-		randf_range(-deviation, deviation),
-		randf_range(-deviation, deviation)
-	)
-	var final_target = sim_pos + deviation_vec
-	
-	# Shell visual timing
-	var travel_time = clamp(dist / 600.0, look_ahead_time, 5.0)
+	# Add controlled randomness to the final target
+	var randomness = 5.0 # Spread in units
+	final_target += Vector3(randf_range(-randomness, randomness), randf_range(-randomness, randomness), randf_range(-randomness, randomness))
 	
 	# Visual Tracer
-	create_tracer(muzzle_flash.global_position, final_target, travel_time)
+	create_tracer(muzzle_flash.global_position, final_target, found_t)
 	
-	# Spawn explosion at predicted point
+	# Spawn explosion
 	var exp = explosion_scene.instantiate()
 	get_parent().add_child(exp)
 	exp.global_position = final_target
 	if exp.has_method("setup"):
-		exp.setup(travel_time)
+		exp.setup(found_t)
 
 func create_tracer(start: Vector3, end: Vector3, time: float):
 	var tracer = MeshInstance3D.new()

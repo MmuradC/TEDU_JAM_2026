@@ -8,6 +8,7 @@ var is_active: bool = false
 @onready var explosion_visual = $ExplosionVisual
 
 var boom_player: AudioStreamPlayer3D
+var tracked_by_player: Node = null
 
 func _ready():
 	boom_player = AudioStreamPlayer3D.new()
@@ -35,31 +36,53 @@ func setup(delay: float) -> void:
 	
 	if target_marker:
 		target_marker.visible = true
-		# Duplicate material to avoid affecting other instances
-		var mat = target_marker.get_active_material(0).duplicate()
-		target_marker.set_surface_override_material(0, mat)
-		mat.albedo_color.a = 0.0
+		if target_marker.has_node("X"): target_marker.get_node("X").visible = false
+		if target_marker.has_node("Z"): target_marker.get_node("Z").visible = false
+		
+		# Prepare materials for only the sphere marker
+		if target_marker.has_node("ImpactSphere"):
+			var sphere = target_marker.get_node("ImpactSphere")
+			var mat = sphere.get_active_material(0).duplicate()
+			sphere.set_surface_override_material(0, mat)
+			mat.albedo_color.a = 0.0
 	
 	if explosion_visual: 
 		explosion_visual.visible = false
+		
+	var player = get_tree().get_first_node_in_group("player")
+	if is_instance_valid(player) and player.has_method("register_incoming_bomb"):
+		tracked_by_player = player
+		tracked_by_player.register_incoming_bomb(true)
+
+func _exit_tree():
+	if is_instance_valid(tracked_by_player) and tracked_by_player.has_method("register_incoming_bomb"):
+		tracked_by_player.register_incoming_bomb(false)
+		tracked_by_player = null
 
 func _process(delta: float) -> void:
 	if not is_active: return
 	
 	time_left -= delta
 	
-	# Fade in opacity and emission as detonation approaches
+	# Fade in opacity and emission of the remaining sphere marker
 	if target_marker and delay_time > 0:
 		var progress = 1.0 - (time_left / delay_time)
-		var mat = target_marker.get_active_material(0)
-		mat.albedo_color.a = clamp(progress, 0.0, 1.0)
-		mat.emission_energy_multiplier = progress * 5.0
+		if target_marker.has_node("ImpactSphere"):
+			var sphere = target_marker.get_node("ImpactSphere")
+			var mat = sphere.get_surface_override_material(0)
+			if mat:
+				mat.albedo_color.a = clamp(progress * 0.7, 0.0, 0.7)
+				mat.emission_energy_multiplier = progress * 10.0
 	
 	if time_left <= 0:
 		explode()
 
 func explode() -> void:
 	is_active = false
+	
+	if is_instance_valid(tracked_by_player) and tracked_by_player.has_method("register_incoming_bomb"):
+		tracked_by_player.register_incoming_bomb(false)
+		tracked_by_player = null
 	
 	if target_marker: target_marker.visible = false
 	if explosion_visual: explosion_visual.visible = true
@@ -69,8 +92,8 @@ func explode() -> void:
 	
 	var player = get_tree().get_first_node_in_group("player")
 	if is_instance_valid(player):
-		var blast_radius = 7.0 # Reduced by 25% from 9.375
-		var max_damage = 40.0
+		var blast_radius = 11.0 # Slightly increased per user request
+		var max_damage = 45.0 # Increased so bombs deal more damage
 		var distance = global_position.distance_to(player.global_position)
 		
 		if distance <= blast_radius: 

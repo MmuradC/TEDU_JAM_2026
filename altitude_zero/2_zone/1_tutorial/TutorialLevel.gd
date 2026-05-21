@@ -287,7 +287,7 @@ func update_objective_ui():
 		var status_msg = ""
 		if photo_status > 0:
 			status_msg = "\n[STATUS: DATA PENDING TRANSMISSION...]"
-		elif airplane.global_position.y > cloud_altitude:
+		elif is_instance_valid(airplane) and airplane.is_inside_tree() and airplane.global_position.y > cloud_altitude:
 			status_msg = "\n[STATUS: DESCEND TO PHOTOGRAPH]"
 		else:
 			status_msg = "\n[STATUS: SEARCHING TARGETS...]"

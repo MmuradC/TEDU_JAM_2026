@@ -1,7 +1,7 @@
 extends Node3D
 
 # --- Movement Settings ---
-@export var min_speed: float = 100.0
+@export var min_speed: float = 200.0
 @export var max_speed: float = 370.0
 @export var cruise_speed: float = 240.0
 @export var sensitivity_x: float = 3.0
@@ -10,8 +10,8 @@ extends Node3D
 
 # --- Steering Smoothing ---
 @export var max_turn_speed: float = 120.0 
-@export var smoothing_speed_x: float = 4.0
-@export var smoothing_speed_y: float = 4.0
+@export var smoothing_speed_x: float = 12.0
+@export var smoothing_speed_y: float = 12.0
 
 # --- Visual Animation Settings ---
 @export var max_roll_angle: float = 45.0
@@ -26,6 +26,9 @@ var base_target_speed: float = 240.0 # Player throttle
 var active_aa_count: int = 0
 var virtual_mouse_offset: Vector2 = Vector2.ZERO
 var is_flashing: bool = false
+var ground: Node
+var target_ray: RayCast3D
+var indicator: MeshInstance3D
 
 # --- Health System ---
 @export var max_health: float = 100.0
@@ -44,19 +47,19 @@ var current_energy: float = 100.0
 @onready var plane_crosshair = find_ui_node("PlaneCrosshair")
 @onready var ww2_viewfinder = find_ui_node("WW2Viewfinder")
 @onready var speed_arrow = find_ui_node("SpeedArrow")
+@onready var attitude_label = find_ui_node("AttitudeLabel")
 
 @onready var airplane_model = $bf109
-@onready var smoke_particles = get_node_or_null("SmokeParticles")
-@onready var fire_particles = get_node_or_null("FireParticles")
+var smoke_particles: CPUParticles3D
+var fire_particles: CPUParticles3D
 @onready var nose_ray = get_node_or_null("NoseRayCast")
 @onready var engine_sound = get_node_or_null("EngineSound")
 @onready var camera = $Camera3D
 @onready var tps_pos = $TPSPos
 @onready var top_down_pos = $TopDownPos
-@onready var ground = get_tree().root.find_child("Ground", true, false)
 
 func find_ui_node(node_name: String) -> Node:
-	var root = get_tree().root.get_child(0) if get_tree().root.get_child_count() > 0 else null
+	var root = get_tree().current_scene
 	if root:
 		var ui = root.find_child("UI", true, false)
 		if ui:
@@ -73,10 +76,40 @@ func sync_ui_references():
 	plane_crosshair = find_ui_node("PlaneCrosshair")
 	ww2_viewfinder = find_ui_node("WW2Viewfinder")
 	speed_arrow = find_ui_node("SpeedArrow")
+	attitude_label = find_ui_node("AttitudeLabel")
+
+var hit_alarm_player: AudioStreamPlayer
+
+var incoming_bombs: int = 0
+var bomb_warning_label: Label = null
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	current_speed_kmh = cruise_speed
+	
+	bomb_warning_label = Label.new()
+	bomb_warning_label.add_theme_font_size_override("font_size", 20)
+	bomb_warning_label.add_theme_color_override("font_color", Color(1, 0, 0))
+	var root = get_tree().current_scene
+	if root:
+		var ui = root.find_child("UI", true, false)
+		if ui:
+			ui.add_child(bomb_warning_label)
+			bomb_warning_label.position = Vector2(50, 180)
+			bomb_warning_label.visible = false
+	
+	hit_alarm_player = AudioStreamPlayer.new()
+	add_child(hit_alarm_player)
+	var alarm_stream = AudioStreamWAV.new()
+	alarm_stream.format = AudioStreamWAV.FORMAT_8_BITS
+	alarm_stream.mix_rate = 11025
+	var data = PackedByteArray()
+	for i in range(5000):
+		var val = int(sin(float(i) * 0.1) * 127.0)
+		data.append(clamp(val, -128, 127))
+	alarm_stream.data = data
+	hit_alarm_player.stream = alarm_stream
+	hit_alarm_player.volume_db = 10.0 # Make it loud
 	
 	# Tune camera markers for a better "size" feel (Closer to the plane)
 	if tps_pos: tps_pos.position = Vector3(0, 1.5, 4) # Lower and much closer
@@ -90,6 +123,32 @@ func _ready() -> void:
 	# Attempt to find UI nodes immediately and again after a short delay
 	sync_ui_references()
 	get_tree().create_timer(0.5).timeout.connect(sync_ui_references)
+	
+	ground = get_tree().root.find_child("Ground", true, false)
+
+	# Find particles in the scene
+	var scene_root = get_tree().current_scene
+	if scene_root:
+		smoke_particles = scene_root.find_child("SmokeParticles", true, false)
+		fire_particles = scene_root.find_child("FireParticles", true, false)
+
+	# Initialize target ray and indicator
+	target_ray = RayCast3D.new()
+	target_ray.target_position = Vector3(0, 0, -5000) # Longer range to catch distant ground
+	target_ray.collision_mask = 1 # Match ground layer
+	add_child(target_ray)
+	
+	indicator = MeshInstance3D.new()
+	var ring = TorusMesh.new()
+	ring.inner_radius = 2.5
+	ring.outer_radius = 3.0
+	indicator.mesh = ring
+	var mat = StandardMaterial3D.new()
+	mat.albedo_color = Color(1, 0, 0, 0.9)
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	indicator.material_override = mat
+	add_child(indicator)
+	indicator.visible = false
 
 	if engine_sound and not engine_sound.playing:
 		engine_sound.play()
@@ -118,6 +177,18 @@ func _process(delta: float) -> void:
 	handle_visuals(delta)
 	handle_camera(delta)
 	update_ui()
+	
+	# Update target ray and indicator
+	target_ray.global_transform = global_transform
+	if target_ray.is_colliding():
+		var collision_point = target_ray.get_collision_point()
+		var collision_normal = target_ray.get_collision_normal()
+		
+		indicator.global_position = collision_point + (collision_normal * 0.1) # Offset slightly above terrain
+		indicator.look_at(collision_point + collision_normal, Vector3.UP) # Align ring to terrain surface
+		indicator.visible = true
+	else:
+		indicator.visible = false
 
 func handle_movement(delta: float) -> void:
 	# THROTTLE INPUT (W/S or Up/Down)
@@ -133,7 +204,7 @@ func handle_movement(delta: float) -> void:
 	# Target speed based on throttle + pitch inclination
 	var target_speed = base_target_speed
 	if pitch_factor > 0: # Climbing: bleed speed
-		target_speed = lerp(base_target_speed, min_speed, pitch_factor)
+		target_speed = lerp(base_target_speed, min_speed, pitch_factor * 0.4)
 	else: # Diving: gain speed from gravity
 		target_speed = lerp(base_target_speed, max_speed, -pitch_factor)
 	
@@ -142,13 +213,16 @@ func handle_movement(delta: float) -> void:
 	current_speed_kmh = move_toward(current_speed_kmh, target_speed, accel_rate * delta)
 	
 	# Apply translation with a visual scale multiplier to make movement feel "right" for the world size
-	var visual_multiplier = 10.0 # Adjust this to match the game's visual scale
+	var visual_multiplier = 11.0 # Adjust this to match the game's visual scale
 	global_translate(forward_vector * (current_speed_kmh / 3.6) * visual_multiplier * delta)
 
 	# CRASH DETECTION
 	if nose_ray and nose_ray.is_colliding():
 		var collider = nose_ray.get_collider()
 		print("CRASHED INTO: ", collider.name)
+		die()
+	elif global_position.y <= -0.5:
+		print("CRASHED INTO: Ground (Out of bounds)")
 		die()
 
 	if ground:
@@ -170,8 +244,8 @@ func handle_steering(delta: float) -> void:
 	
 	# STAMINA IMPACT: Turn rate is reduced if energy is low (< 25%)
 	var stamina_penalty = 1.0
-	if current_energy < 25.0:
-		stamina_penalty = lerp(0.3, 1.0, current_energy / 25.0)
+	if current_energy < 15.0:
+		stamina_penalty = lerp(0.5, 1.0, current_energy / 15.0)
 	
 	target_yaw_speed *= stamina_penalty
 	target_pitch_speed *= stamina_penalty
@@ -233,7 +307,7 @@ func handle_camera(delta: float) -> void:
 		var target_transform = tps_pos.transform if not is_top_down else top_down_pos.transform
 		
 		# Slower interpolation for a more cinematic feel
-		var cam_speed = 3.0 if not is_top_down else 5.0
+		var cam_speed = 15.0 if not is_top_down else 10.0
 		
 		# Apply the transform to the camera
 		camera.transform = camera.transform.interpolate_with(target_transform, cam_speed * delta)
@@ -246,10 +320,20 @@ func update_ui() -> void:
 	if speed_label:
 		speed_label.text = "Speed: %d km/h" % int(current_speed_kmh)
 	
+	if attitude_label:
+		var forward_vector = -global_transform.basis.z
+		var pitch_deg = rad_to_deg(asin(clamp(forward_vector.y, -1.0, 1.0)))
+		attitude_label.text = "ATTITUDE: %d°" % int(pitch_deg)
+
 	if speed_arrow:
 		# Mapping speed to a full circular gauge (0 to 400 km/h)
 		var speed_perc = clamp(current_speed_kmh / 400.0, 0.0, 1.0)
-		speed_arrow.rotation_degrees = speed_perc * 360.0
+		if "pivot_offset" in speed_arrow and speed_arrow.size != Vector2.ZERO:
+			speed_arrow.pivot_offset = speed_arrow.size / 2.0
+		if "rotation" in speed_arrow:
+			speed_arrow.rotation = speed_perc * TAU
+		else:
+			speed_arrow.rotation_degrees = speed_perc * 360.0
 	
 	if energy_bar:
 		energy_bar.value = (current_energy / max_energy) * 100.0
@@ -281,9 +365,17 @@ func take_damage(amount: float) -> void:
 	# Damage Phases
 	if smoke_particles:
 		smoke_particles.emitting = current_health <= 60.0 and current_health > 0
+		smoke_particles.visible = current_health <= 60.0 and current_health > 0
+		smoke_particles.scale = Vector3(1.5, 1.5, 1.5)
+		smoke_particles.local_coords = false
+		smoke_particles.global_position = global_position
 	
 	if fire_particles:
 		fire_particles.emitting = current_health <= 30.0 and current_health > 0
+		fire_particles.visible = current_health <= 30.0 and current_health > 0
+		fire_particles.scale = Vector3(1.5, 1.5, 1.5)
+		fire_particles.local_coords = false
+		fire_particles.global_position = global_position
 	
 	if current_health <= 0:
 		die()
@@ -314,6 +406,7 @@ func die() -> void:
 		get_tree().reload_current_scene()
 
 func has_been_hit() -> void:
+	if hit_alarm_player: hit_alarm_player.play()
 	if hit_indicator and not is_flashing:
 		is_flashing = true
 		for i in range(5):
@@ -337,3 +430,16 @@ func register_aa_in_range(is_inside: bool) -> void:
 			aa_label.visible = true
 		else:
 			aa_label.visible = false
+
+func register_incoming_bomb(is_incoming: bool) -> void:
+	if is_incoming:
+		incoming_bombs += 1
+	else:
+		incoming_bombs = max(0, incoming_bombs - 1)
+	
+	if bomb_warning_label:
+		if incoming_bombs > 0:
+			bomb_warning_label.text = "%d BOMB BULLET FOLLOWING US!" % incoming_bombs
+			bomb_warning_label.visible = true
+		else:
+			bomb_warning_label.visible = false

@@ -8,3 +8,19 @@ script = ExtResource("1_nh6xf")
 [node name="CutsceneVideo" type="VideoStreamPlayer" parent="." unique_id=311400215]
 offset_right = 40.0
 offset_bottom = 40.0
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="SkipLabel" type="Label" parent="UI"]
+offset_left = 1600.0
+offset_top = 20.0
+offset_right = 1900.0
+offset_bottom = 60.0
+text = "Press and hold ENTER to skip"
+
+[node name="SkipProgressBar" type="ProgressBar" parent="UI"]
+offset_left = 1600.0
+offset_top = 60.0
+offset_right = 1900.0
+offset_bottom = 80.0
+show_percentage = false
