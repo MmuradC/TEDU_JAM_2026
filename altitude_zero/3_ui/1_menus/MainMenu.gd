@@ -8,17 +8,30 @@ extends Control
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	options_menu.visible = false
-	start_button.grab_focus()
+	if options_menu:
+		options_menu.visible = false
+	if start_button:
+		start_button.grab_focus()
 
 	# Initialize Volume Slider
 	var master_bus = AudioServer.get_bus_index("Master")
-	var volume_db = AudioServer.get_bus_volume_db(master_bus)
-	$OptionsMenu/VBoxContainer/VolumeSlider.value = db_to_linear(volume_db) * 100.0
+	if master_bus != -1:
+		var volume_db = AudioServer.get_bus_volume_db(master_bus)
+		var slider = get_node_or_null("OptionsMenu/VBoxContainer/VolumeSlider")
+		if slider:
+			slider.value = db_to_linear(volume_db) * 100.0
 
 	# Start background music
 	if music_player and not music_player.playing:
 		music_player.play()
+	
+	# Web compatibility: Ensure VideoStreamPlayer is handled
+	var video_player = get_node_or_null("BackgroundGIF")
+	if video_player and video_player is VideoStreamPlayer:
+		if OS.get_name() == "Web":
+			# Some browsers require user interaction before video/audio
+			# We'll try to play, but it might only start after a click
+			video_player.play()
 
 func _on_start_button_pressed():
 	var global = get_node_or_null("/root/GlobalState")
